@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="WarehouseApp.Domain/WarehouseApp.Domain.csproj" />
+  <Project Path="WarehouseApp.Infrastructure/WarehouseApp.Infrastructure.csproj" />
+  <Project Path="WarehouseApp.Interfaces/WarehouseApp.Interfaces.csproj" />
+  <Project Path="WarehouseApp.Maui/WarehouseApp.Maui.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="WarehouseApp.Migrations/WarehouseApp.Migrations.csproj" />
+</Solution>
