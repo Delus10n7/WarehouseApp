@@ -3,12 +3,55 @@
     x:Class="WarehouseApp.Maui.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:WarehouseApp.Maui"
-    Title="WarehouseApp.Maui">
+    xmlns:reports="clr-namespace:WarehouseApp.Maui.Views.Reports"
+    xmlns:documents="clr-namespace:WarehouseApp.Maui.Views.Documents"
+    xmlns:products="clr-namespace:WarehouseApp.Maui.Views.Products"
+    xmlns:counterparties="clr-namespace:WarehouseApp.Maui.Views.Counterparties"
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
 
+    Shell.TabBarIsVisible="False"
+    Shell.TabBarBackgroundColor="White"
+    Shell.TabBarForegroundColor="#2E7CF6"
+    Shell.TabBarTitleColor="#2E7CF6"
+    Shell.TabBarUnselectedColor="#8E8E93">
+
+    <TabBar>
+        <ShellContent
+            Title="Отчёты"
+            Route="reports"
+            ContentTemplate="{DataTemplate reports:ReportsPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="&#xf080;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent
+            Title="Документы"
+            Route="documents"
+            ContentTemplate="{DataTemplate documents:DocumentsPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="&#xf15c;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent
+            Title="Товары"
+            Route="products"
+            ContentTemplate="{DataTemplate products:ProductsPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="&#xf290;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+            </ShellContent.Icon>
+        </ShellContent>
+
+        <ShellContent
+            Title="Контрагенты"
+            Route="counterparties"
+            ContentTemplate="{DataTemplate counterparties:CounterpartiesPage}">
+            <ShellContent.Icon>
+                <FontImageSource Glyph="&#xf0c0;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+            </ShellContent.Icon>
+        </ShellContent>
+    </TabBar>
 </Shell>

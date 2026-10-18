@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WarehouseApp.Maui.Controls.BottomTabBar"
+             x:Name="root">
+
+    <Border BackgroundColor="White"
+            StrokeThickness="0"
+            Margin="16,0,16,16"
+            Padding="0,10">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="24" />
+        </Border.StrokeShape>
+        <Border.Shadow>
+            <Shadow Brush="Black" Opacity="0.08" Radius="12" Offset="0,4" />
+        </Border.Shadow>
+
+        <Grid ColumnDefinitions="*,*,*,*">
+
+            <!-- Отчёты -->
+            <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="reports" />
+                </VerticalStackLayout.GestureRecognizers>
+                <Label Text="&#xf080;" FontFamily="FontAwesomeSolid" FontSize="22"
+                       HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="reports">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Label Text="Отчёты" FontSize="11" HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="reports">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </VerticalStackLayout>
+
+            <!-- Документы -->
+            <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="documents" />
+                </VerticalStackLayout.GestureRecognizers>
+                <Label Text="&#xf15c;" FontFamily="FontAwesomeSolid" FontSize="22"
+                       HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="documents">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Label Text="Документы" FontSize="11" HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="documents">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </VerticalStackLayout>
+
+            <!-- Товары -->
+            <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="products" />
+                </VerticalStackLayout.GestureRecognizers>
+                <Label Text="&#xf290;" FontFamily="FontAwesomeSolid" FontSize="22"
+                       HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="products">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Label Text="Товары" FontSize="11" HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="products">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </VerticalStackLayout>
+
+            <!-- Контрагенты -->
+            <VerticalStackLayout Grid.Column="3" Spacing="4" VerticalOptions="Center">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="counterparties" />
+                </VerticalStackLayout.GestureRecognizers>
+                <Label Text="&#xf0c0;" FontFamily="FontAwesomeSolid" FontSize="22"
+                       HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="counterparties">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+                <Label Text="Контрагенты" FontSize="11" HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding ActiveTab, Source={x:Reference root}}"
+                                     Value="counterparties">
+                            <Setter Property="TextColor" Value="#2E7CF6" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </VerticalStackLayout>
+
+        </Grid>
+    </Border>
+</ContentView>

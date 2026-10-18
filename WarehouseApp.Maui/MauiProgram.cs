@@ -17,8 +17,15 @@ namespace WarehouseApp.Maui
                     fonts.AddFont("fa-solid-900.ttf", "FontAwesomeSolid");
                 });
 
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+#if ANDROID
+                handlers.AddHandler<Shell, WarehouseApp.Maui.Platforms.Android.CustomShellRenderer>();
+#endif
+            });
+
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             string connectionString = "Server=localhost\\SQLEXPRESS; Database=WarehouseDb; Trusted_Connection=True; TrustServerCertificate=True;";
