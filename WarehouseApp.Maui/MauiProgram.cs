@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using WarehouseApp.Infrastructure;
+using CommunityToolkit.Maui;
 
 namespace WarehouseApp.Maui
 {
@@ -10,6 +11,7 @@ namespace WarehouseApp.Maui
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

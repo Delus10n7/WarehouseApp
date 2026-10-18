@@ -1,10 +1,10 @@
 namespace WarehouseApp.Maui.Controls;
+using CommunityToolkit.Mvvm.Input;
 
 public partial class BottomTabBar : ContentView
 {
     public static readonly BindableProperty ActiveTabProperty =
-        BindableProperty.Create(
-            nameof(ActiveTab), typeof(string), typeof(BottomTabBar), string.Empty);
+        BindableProperty.Create(nameof(ActiveTab), typeof(string), typeof(BottomTabBar), string.Empty);
 
     public string ActiveTab
     {
@@ -12,16 +12,17 @@ public partial class BottomTabBar : ContentView
         set => SetValue(ActiveTabProperty, value);
     }
 
+    public IAsyncRelayCommand<string> OnTabTappedCommand { get; }
+
     public BottomTabBar()
     {
+        OnTabTappedCommand = new AsyncRelayCommand<string>(OnTabTappedAsync);
         InitializeComponent();
     }
 
-    private async void OnTabTapped(object? sender, TappedEventArgs e)
+    private async Task OnTabTappedAsync(string? route)
     {
-        if (e.Parameter is not string route) return;
-        if (route == ActiveTab) return; // уже на этой вкладке
-
+        if (string.IsNullOrEmpty(route) || route == ActiveTab) return;
         await Shell.Current.GoToAsync($"//{route}");
     }
 }
