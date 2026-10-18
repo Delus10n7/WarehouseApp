@@ -17,13 +17,6 @@ namespace WarehouseApp.Maui
                     fonts.AddFont("fa-solid-900.ttf", "FontAwesomeSolid");
                 });
 
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-#if ANDROID
-                handlers.AddHandler<Shell, WarehouseApp.Maui.Platforms.Android.CustomShellRenderer>();
-#endif
-            });
-
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
