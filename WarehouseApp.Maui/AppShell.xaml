@@ -12,10 +12,10 @@
     Shell.NavBarIsVisible="False"
 
     Shell.TabBarIsVisible="False"
-    Shell.TabBarBackgroundColor="White"
-    Shell.TabBarForegroundColor="#2E7CF6"
-    Shell.TabBarTitleColor="#2E7CF6"
-    Shell.TabBarUnselectedColor="#8E8E93">
+    Shell.TabBarBackgroundColor="{StaticResource Surface}"
+    Shell.TabBarForegroundColor="{StaticResource Primary}"
+    Shell.TabBarTitleColor="{StaticResource Primary}"
+    Shell.TabBarUnselectedColor="{StaticResource TextPrimary}">
 
     <TabBar>
         <ShellContent
@@ -23,7 +23,7 @@
             Route="reports"
             ContentTemplate="{DataTemplate reports:ReportsPage}">
             <ShellContent.Icon>
-                <FontImageSource Glyph="&#xf080;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+                <FontImageSource Glyph="&#xf080;" FontFamily="FontAwesomeSolid" Size="34" Color="{StaticResource Primary}"/>
             </ShellContent.Icon>
         </ShellContent>
 
@@ -32,7 +32,7 @@
             Route="documents"
             ContentTemplate="{DataTemplate documents:DocumentsPage}">
             <ShellContent.Icon>
-                <FontImageSource Glyph="&#xf15c;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+                <FontImageSource Glyph="&#xf15c;" FontFamily="FontAwesomeSolid" Size="34" Color="{StaticResource Primary}"/>
             </ShellContent.Icon>
         </ShellContent>
 
@@ -41,7 +41,7 @@
             Route="products"
             ContentTemplate="{DataTemplate products:ProductsPage}">
             <ShellContent.Icon>
-                <FontImageSource Glyph="&#xf290;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+                <FontImageSource Glyph="&#xf290;" FontFamily="FontAwesomeSolid" Size="34" Color="{StaticResource Primary}"/>
             </ShellContent.Icon>
         </ShellContent>
 
@@ -50,7 +50,7 @@
             Route="counterparties"
             ContentTemplate="{DataTemplate counterparties:CounterpartiesPage}">
             <ShellContent.Icon>
-                <FontImageSource Glyph="&#xf0c0;" FontFamily="FontAwesomeSolid" Size="22" Color="#2E7CF6"/>
+                <FontImageSource Glyph="&#xf0c0;" FontFamily="FontAwesomeSolid" Size="34" Color="{StaticResource Primary}"/>
             </ShellContent.Icon>
         </ShellContent>
     </TabBar>

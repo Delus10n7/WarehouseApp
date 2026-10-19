@@ -4,16 +4,16 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:WarehouseApp.Maui.Controls"
     x:Class="WarehouseApp.Maui.Views.Documents.DocumentsPage"
-    BackgroundColor="#F5F5F7"
+    BackgroundColor="{StaticResource Surface}"
     Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="*,Auto">
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Padding="16,20">
                 <Label Text="Документы"
-                       FontSize="28"
+                       FontSize="24"
                        FontAttributes="Bold"
-                       TextColor="Black" />
+                       TextColor="{StaticResource TextPrimary}" />
             </VerticalStackLayout>
         </ScrollView>
 
