@@ -6,60 +6,50 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WarehouseApp.Domain.Entities;
+using WarehouseApp.Interfaces.Abstractions;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties
 {
     public partial class CounterpartyFormViewModel : ObservableObject
     {
         private readonly IPopupService _popupService;
+        private readonly ICounterpartyRepository _repository;
+        private Counterparty? _entityToUpdate;
 
-        [ObservableProperty]
-        private string title;
-
-        [ObservableProperty]
-        private string buttonText;
-
-        [ObservableProperty]
-        private Color buttonColor;
-
-        // Поля формы
-        [ObservableProperty]
-        private string name;
-
-        [ObservableProperty]
-        private string phone;
-
-        [ObservableProperty]
-        private string email;
+        [ObservableProperty] private string title = string.Empty;
+        [ObservableProperty] private string buttonText = string.Empty;
+        [ObservableProperty] private Color buttonColor = Colors.Transparent;
+        [ObservableProperty] private string name = string.Empty;
+        [ObservableProperty] private string phone = string.Empty;
+        [ObservableProperty] private string email = string.Empty;
+        [ObservableProperty] private string errorMessage = string.Empty;
 
         public bool IsEditMode { get; }
-        public Func<Task>? ClosePopupAction { get; set; }
 
         // Конструктор для режима "Создание"
-        public CounterpartyFormViewModel(IPopupService popupService)
+        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyRepository repository)
         {
             _popupService = popupService;
+            _repository = repository;
 
             IsEditMode = false;
             Title = "Создать контрагента";
             ButtonText = "Добавить контрагента";
-            ButtonColor = Color.FromArgb("#4CAF50"); // Success из вашей палитры
-            Name = string.Empty;
-            Phone = string.Empty;
-            Email = string.Empty;
+            ButtonColor = Color.FromArgb("#4CAF50");
         }
 
         // Конструктор для режима "Редактирование"
-        public CounterpartyFormViewModel(IPopupService popupService, Counterparty existingCounterparty)
+        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyRepository repository, Counterparty existingCounterparty)
         {
             _popupService = popupService;
+            _repository = repository;
+            _entityToUpdate = existingCounterparty;
 
             IsEditMode = true;
             Title = "Контрагент";
             ButtonText = "Изменить контрагента";
-            ButtonColor = Color.FromArgb("#1976D2"); // Primary из вашей палитры
+            ButtonColor = Color.FromArgb("#1976D2");
 
-            // Предзаполняем данные
             Name = existingCounterparty.Name;
             Phone = existingCounterparty.Phone ?? string.Empty;
             Email = existingCounterparty.Email ?? string.Empty;
@@ -70,22 +60,52 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                // Пока просто выходим, если поле пустое.
-                // Позже здесь будет валидация.
+                ErrorMessage = "Поле «Наименование» обязательно для заполнения.";
                 return;
             }
 
-            if (IsEditMode)
-            {
-                // TODO: Логика обновления в БД
-            }
-            else
-            {
-                // TODO: Логика добавления в БД
-            }
+            ErrorMessage = string.Empty;
 
-            // Закрываем попап после сохранения
-            await _popupService.ClosePopupAsync(Application.Current!.Windows[0].Page!.Navigation);
+            try
+            {
+                string? phoneToSave = string.IsNullOrWhiteSpace(Phone) ? null : Phone;
+                string? emailToSave = string.IsNullOrWhiteSpace(Email) ? null : Email;
+
+                if (IsEditMode && _entityToUpdate != null)
+                {
+                    _entityToUpdate.Name = Name.Trim();
+                    _entityToUpdate.Phone = phoneToSave;
+                    _entityToUpdate.Email = emailToSave;
+                    await _repository.UpdateAsync(_entityToUpdate);
+                }
+                else
+                {
+                    var newCounterparty = new Counterparty
+                    {
+                        Name = Name.Trim(),
+                        Phone = phoneToSave,
+                        Email = emailToSave
+                    };
+                    await _repository.AddAsync(newCounterparty);
+                }
+
+                if (Shell.Current != null)
+                {
+                    await _popupService.ClosePopupAsync(Shell.Current.Navigation);
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Ошибка сохранения: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
+        }
+
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+
+        partial void OnErrorMessageChanged(string value)
+        {
+            OnPropertyChanged(nameof(HasError));
         }
     }
 }

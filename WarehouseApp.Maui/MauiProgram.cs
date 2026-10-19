@@ -32,9 +32,10 @@ namespace WarehouseApp.Maui
             {
                 handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
             });
-#endif
-
+            string connectionString = "Server=10.0.2.2,1433; Database=WarehouseDb; User Id=sa; Password=P@ssw0rd1; TrustServerCertificate=True;";
+#else
             string connectionString = "Server=localhost\\SQLEXPRESS; Database=WarehouseDb; Trusted_Connection=True; TrustServerCertificate=True;";
+#endif
 
             // Infrastructure (EF Core, репозитории)
             builder.Services.AddInfrastructure(connectionString);

@@ -11,13 +11,17 @@ namespace WarehouseApp.Infrastructure
     public static class DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(
-            this IServiceCollection services, string connectionString)
+    this IServiceCollection services, string connectionString)
         {
-            services.AddDbContext<WarehouseDbContext>(opt =>
-                opt.UseSqlServer(connectionString));
+            services.AddDbContextFactory<WarehouseDbContext>(options =>
+                options.UseSqlServer(connectionString, sqlServerOptions =>
+                {
+                    sqlServerOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                }));
 
-            services.AddScoped<IWarehouseDbContext>(sp => sp.GetRequiredService<WarehouseDbContext>());
+            //services.AddScoped<IWarehouseDbContext>(sp => sp.GetRequiredService<WarehouseDbContext>());
             services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<ICounterpartyRepository, CounterpartyRepository>();
 
             return services;
         }

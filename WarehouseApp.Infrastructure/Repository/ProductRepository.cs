@@ -9,35 +9,47 @@ namespace WarehouseApp.Infrastructure.Repository
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly WarehouseDbContext _context;
+        private readonly IDbContextFactory<WarehouseDbContext> _contextFactory;
 
-        public ProductRepository(WarehouseDbContext context) => _context = context;
+        public ProductRepository(IDbContextFactory<WarehouseDbContext> contextFactory)
+        {
+            _contextFactory = contextFactory;
+        }
 
-        public Task<List<Product>> GetAllAsync(CancellationToken ct = default) =>
-            _context.Products.Include(p => p.Category).Include(p => p.UnitOfMeasure).ToListAsync(ct);
+        public async Task<List<Product>> GetAllAsync(CancellationToken ct = default)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync(ct);
+            return await context.Products.Include(p => p.Category).Include(p => p.UnitOfMeasure).ToListAsync(ct);
+        }
 
-        public Task<Product?> GetByIdAsync(int id, CancellationToken ct = default) =>
-            _context.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
+        public async Task<Product?> GetByIdAsync(int id, CancellationToken ct = default)
+        {
+            await using var context = await _contextFactory.CreateDbContextAsync(ct);
+            return await context.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
+        }
 
         public async Task AddAsync(Product product, CancellationToken ct = default)
         {
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync(ct);
+            await using var context = await _contextFactory.CreateDbContextAsync(ct);
+            context.Products.Add(product);
+            await context.SaveChangesAsync(ct);
         }
 
         public async Task UpdateAsync(Product product, CancellationToken ct = default)
         {
-            _context.Products.Update(product);
-            await _context.SaveChangesAsync(ct);
+            await using var context = await _contextFactory.CreateDbContextAsync(ct);
+            context.Products.Update(product);
+            await context.SaveChangesAsync(ct);
         }
 
         public async Task DeleteAsync(int id, CancellationToken ct = default)
         {
-            var p = await _context.Products.FindAsync(new object[] { id }, ct);
+            await using var context = await _contextFactory.CreateDbContextAsync(ct);
+            var p = await context.Products.FindAsync(new object[] { id }, ct);
             if (p is not null)
             {
-                _context.Products.Remove(p);
-                await _context.SaveChangesAsync(ct);
+                context.Products.Remove(p);
+                await context.SaveChangesAsync(ct);
             }
         }
     }
