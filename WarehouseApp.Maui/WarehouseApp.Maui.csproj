@@ -86,7 +86,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="ViewModels\" />
+	  <Folder Include="ViewModels\Products\" />
+	  <Folder Include="ViewModels\Reports\" />
+	  <Folder Include="ViewModels\Documents\" />
+	  <Folder Include="ViewModels\Counterparties\" />
 	</ItemGroup>
 
 	<ItemGroup>

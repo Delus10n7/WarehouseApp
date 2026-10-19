@@ -29,12 +29,17 @@
                         Command="{Binding Source={x:Reference root}, Path=OnTabTappedCommand}"
                         CommandParameter="reports"
                         PressedScale="0.92"
-                        PressedOpacity="0.6" />
+                        PressedOpacity="0.6"
+                        PressedAnimationDuration="60"
+                        DefaultAnimationDuration="60"/>
                 </Border.Behaviors>
 
                 <VerticalStackLayout Spacing="4" VerticalOptions="Center">
-                    <Label Text="&#xf080;" FontFamily="FontAwesomeSolid" FontSize="22"
-                           HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label Text="&#xf080;" 
+                           FontFamily="FontAwesomeSolid" 
+                           FontSize="34"
+                           HorizontalOptions="Center" 
+                           TextColor="#8E8E93">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label"
                                          Binding="{Binding ActiveTab, Source={x:Reference root}}"
@@ -43,7 +48,7 @@
                             </DataTrigger>
                         </Label.Triggers>
                     </Label>
-                    <Label Text="Отчёты" FontSize="11" HorizontalOptions="Center" TextColor="#8E8E93">
+                    <Label Text="Отчёты" FontSize="13" HorizontalOptions="Center" TextColor="#8E8E93">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label"
                                          Binding="{Binding ActiveTab, Source={x:Reference root}}"
@@ -66,13 +71,14 @@
                         CommandParameter="documents"
                         PressedScale="0.92"
                         PressedOpacity="0.6"
-                        PressedAnimationDuration="100" />
+                        PressedAnimationDuration="60"
+                        DefaultAnimationDuration="60" />
                 </Border.Behaviors>
 
                 <VerticalStackLayout Spacing="4" VerticalOptions="Center">
                     <Label Text="&#xf15c;"
                            FontFamily="FontAwesomeSolid"
-                           FontSize="22"
+                           FontSize="34"
                            HorizontalOptions="Center"
                            TextColor="#8E8E93">
                         <Label.Triggers>
@@ -84,7 +90,7 @@
                         </Label.Triggers>
                     </Label>
                     <Label Text="Документы"
-                           FontSize="11"
+                           FontSize="13"
                            HorizontalOptions="Center"
                            TextColor="#8E8E93">
                         <Label.Triggers>
@@ -109,13 +115,14 @@
                         CommandParameter="products"
                         PressedScale="0.92"
                         PressedOpacity="0.6"
-                        PressedAnimationDuration="100" />
+                        PressedAnimationDuration="60"
+                        DefaultAnimationDuration="60" />
                 </Border.Behaviors>
 
                 <VerticalStackLayout Spacing="4" VerticalOptions="Center">
                     <Label Text="&#xf290;"
                            FontFamily="FontAwesomeSolid"
-                           FontSize="22"
+                           FontSize="34"
                            HorizontalOptions="Center"
                            TextColor="#8E8E93">
                         <Label.Triggers>
@@ -127,7 +134,7 @@
                         </Label.Triggers>
                     </Label>
                     <Label Text="Товары"
-                           FontSize="11"
+                           FontSize="13"
                            HorizontalOptions="Center"
                            TextColor="#8E8E93">
                         <Label.Triggers>
@@ -152,13 +159,14 @@
                         CommandParameter="counterparties"
                         PressedScale="0.92"
                         PressedOpacity="0.6"
-                        PressedAnimationDuration="100" />
+                        PressedAnimationDuration="60"
+                        DefaultAnimationDuration="60" />
                 </Border.Behaviors>
 
                 <VerticalStackLayout Spacing="4" VerticalOptions="Center">
                     <Label Text="&#xf0c0;"
                            FontFamily="FontAwesomeSolid"
-                           FontSize="22"
+                           FontSize="34"
                            HorizontalOptions="Center"
                            TextColor="#8E8E93">
                         <Label.Triggers>
@@ -170,7 +178,7 @@
                         </Label.Triggers>
                     </Label>
                     <Label Text="Контрагенты"
-                           FontSize="11"
+                           FontSize="13"
                            HorizontalOptions="Center"
                            TextColor="#8E8E93">
                         <Label.Triggers>
