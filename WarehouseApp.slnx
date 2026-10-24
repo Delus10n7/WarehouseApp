@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
   <Project Path="WarehouseApp.Api/WarehouseApp.Api.csproj" Id="a2d2eec1-df9e-492f-aaee-faac4e81c953" />
   <Project Path="WarehouseApp.Application/WarehouseApp.Application.csproj" />
   <Project Path="WarehouseApp.Domain/WarehouseApp.Domain.csproj" />
