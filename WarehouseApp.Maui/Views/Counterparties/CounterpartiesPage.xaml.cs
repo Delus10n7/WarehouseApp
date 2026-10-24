@@ -2,7 +2,7 @@ using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Extensions;
 using Microsoft.Maui.Controls.Shapes;
 using WarehouseApp.Domain.Entities;
-using WarehouseApp.Interfaces.Abstractions;
+using WarehouseApp.Application.Abstractions;
 using WarehouseApp.Maui.Services;
 using WarehouseApp.Maui.ViewModels.Counterparties;
 

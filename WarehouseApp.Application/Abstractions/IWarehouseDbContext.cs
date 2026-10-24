@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using WarehouseApp.Domain.Entities;
 
-namespace WarehouseApp.Interfaces.Abstractions
+namespace WarehouseApp.Application.Abstractions
 {
     public interface IWarehouseDbContext
     {

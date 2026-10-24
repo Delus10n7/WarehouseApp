@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WarehouseApp.Infrastructure.Repository;
-using WarehouseApp.Interfaces.Abstractions;
+using WarehouseApp.Application.Abstractions;
 
 namespace WarehouseApp.Infrastructure
 {

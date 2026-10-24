@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WarehouseApp.Interfaces.Services
+namespace WarehouseApp.Application.Services
 {
     public record ReportSummary(
         decimal Revenue,

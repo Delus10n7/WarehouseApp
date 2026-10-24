@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using WarehouseApp.Domain.Entities;
-using WarehouseApp.Interfaces.Abstractions;
+using WarehouseApp.Application.Abstractions;
 using WarehouseApp.Maui.Services;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties

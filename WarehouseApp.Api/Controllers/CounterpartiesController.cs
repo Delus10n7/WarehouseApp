@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WarehouseApp.Domain.Entities;
-using WarehouseApp.Interfaces.Abstractions;
+using WarehouseApp.Application.Abstractions;
 
 namespace WarehouseApp.Api.Controllers;
 

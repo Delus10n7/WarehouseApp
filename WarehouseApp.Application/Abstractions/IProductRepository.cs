@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using WarehouseApp.Domain.Entities;
 
-namespace WarehouseApp.Interfaces.Abstractions
+namespace WarehouseApp.Application.Abstractions
 {
     public interface IProductRepository
     {

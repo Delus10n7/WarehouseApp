@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using WarehouseApp.Domain.Entities;
-using WarehouseApp.Interfaces.Abstractions;
+using WarehouseApp.Application.Abstractions;
 
 namespace WarehouseApp.Infrastructure.Repository
 {
