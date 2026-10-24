@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WarehouseApp.Domain.Entities.Enums
+namespace WarehouseApp.Domain.Entities.Enums;
+
+public enum ReportPeriod
 {
-    public enum ReportPeriod
-    {
-        Day,
-        Week,
-        Month,
-        Year
-    }
+    Day,
+    Week,
+    Month,
+    Year
 }

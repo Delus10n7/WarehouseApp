@@ -9,103 +9,102 @@ using WarehouseApp.Domain.Entities;
 using WarehouseApp.Application.Abstractions;
 using WarehouseApp.Maui.Services;
 
-namespace WarehouseApp.Maui.ViewModels.Counterparties
+namespace WarehouseApp.Maui.ViewModels.Counterparties;
+
+public partial class CounterpartyFormViewModel : ObservableObject
 {
-    public partial class CounterpartyFormViewModel : ObservableObject
+    private readonly IPopupService _popupService;
+    private readonly ICounterpartyApiService _apiService;
+    private Counterparty? _entityToUpdate;
+
+    [ObservableProperty] private string title = string.Empty;
+    [ObservableProperty] private string buttonText = string.Empty;
+    [ObservableProperty] private Color buttonColor = Colors.Transparent;
+    [ObservableProperty] private string name = string.Empty;
+    [ObservableProperty] private string phone = string.Empty;
+    [ObservableProperty] private string email = string.Empty;
+    [ObservableProperty] private string errorMessage = string.Empty;
+
+    public bool IsEditMode { get; }
+
+    // Конструктор для СОЗДАНИЯ
+    public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService)
     {
-        private readonly IPopupService _popupService;
-        private readonly ICounterpartyApiService _apiService;
-        private Counterparty? _entityToUpdate;
+        _popupService = popupService;
+        _apiService = apiService;
 
-        [ObservableProperty] private string title = string.Empty;
-        [ObservableProperty] private string buttonText = string.Empty;
-        [ObservableProperty] private Color buttonColor = Colors.Transparent;
-        [ObservableProperty] private string name = string.Empty;
-        [ObservableProperty] private string phone = string.Empty;
-        [ObservableProperty] private string email = string.Empty;
-        [ObservableProperty] private string errorMessage = string.Empty;
+        IsEditMode = false;
+        Title = "Создать контрагента";
+        ButtonText = "Добавить контрагента";
+        ButtonColor = Color.FromArgb("#4CAF50");
+    }
 
-        public bool IsEditMode { get; }
+    // Конструктор для РЕДАКТИРОВАНИЯ
+    public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService, Counterparty existingCounterparty)
+    {
+        _popupService = popupService;
+        _apiService = apiService;
+        _entityToUpdate = existingCounterparty;
 
-        // Конструктор для СОЗДАНИЯ
-        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService)
+        IsEditMode = true;
+        Title = "Контрагент";
+        ButtonText = "Изменить контрагента";
+        ButtonColor = Color.FromArgb("#1976D2");
+
+        Name = existingCounterparty.Name;
+        Phone = existingCounterparty.Phone ?? string.Empty;
+        Email = existingCounterparty.Email ?? string.Empty;
+    }
+
+    [RelayCommand]
+    private async Task SaveAsync()
+    {
+        if (string.IsNullOrWhiteSpace(Name))
         {
-            _popupService = popupService;
-            _apiService = apiService;
-
-            IsEditMode = false;
-            Title = "Создать контрагента";
-            ButtonText = "Добавить контрагента";
-            ButtonColor = Color.FromArgb("#4CAF50");
+            ErrorMessage = "Поле «Наименование» обязательно для заполнения.";
+            return;
         }
 
-        // Конструктор для РЕДАКТИРОВАНИЯ
-        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService, Counterparty existingCounterparty)
+        ErrorMessage = string.Empty;
+
+        try
         {
-            _popupService = popupService;
-            _apiService = apiService;
-            _entityToUpdate = existingCounterparty;
+            string? phoneToSave = string.IsNullOrWhiteSpace(Phone) ? null : Phone;
+            string? emailToSave = string.IsNullOrWhiteSpace(Email) ? null : Email;
 
-            IsEditMode = true;
-            Title = "Контрагент";
-            ButtonText = "Изменить контрагента";
-            ButtonColor = Color.FromArgb("#1976D2");
-
-            Name = existingCounterparty.Name;
-            Phone = existingCounterparty.Phone ?? string.Empty;
-            Email = existingCounterparty.Email ?? string.Empty;
-        }
-
-        [RelayCommand]
-        private async Task SaveAsync()
-        {
-            if (string.IsNullOrWhiteSpace(Name))
+            if (IsEditMode && _entityToUpdate != null)
             {
-                ErrorMessage = "Поле «Наименование» обязательно для заполнения.";
-                return;
+                _entityToUpdate.Name = Name.Trim();
+                _entityToUpdate.Phone = phoneToSave;
+                _entityToUpdate.Email = emailToSave;
+                await _apiService.UpdateAsync(_entityToUpdate);
+            }
+            else
+            {
+                var newCounterparty = new Counterparty
+                {
+                    Name = Name.Trim(),
+                    Phone = phoneToSave,
+                    Email = emailToSave
+                };
+                await _apiService.AddAsync(newCounterparty);
             }
 
-            ErrorMessage = string.Empty;
-
-            try
+            if (Shell.Current != null)
             {
-                string? phoneToSave = string.IsNullOrWhiteSpace(Phone) ? null : Phone;
-                string? emailToSave = string.IsNullOrWhiteSpace(Email) ? null : Email;
-
-                if (IsEditMode && _entityToUpdate != null)
-                {
-                    _entityToUpdate.Name = Name.Trim();
-                    _entityToUpdate.Phone = phoneToSave;
-                    _entityToUpdate.Email = emailToSave;
-                    await _apiService.UpdateAsync(_entityToUpdate);
-                }
-                else
-                {
-                    var newCounterparty = new Counterparty
-                    {
-                        Name = Name.Trim(),
-                        Phone = phoneToSave,
-                        Email = emailToSave
-                    };
-                    await _apiService.AddAsync(newCounterparty);
-                }
-
-                if (Shell.Current != null)
-                {
-                    await _popupService.ClosePopupAsync(Shell.Current.Navigation);
-                }
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка сохранения: {ex.Message}";
+                await _popupService.ClosePopupAsync(Shell.Current.Navigation);
             }
         }
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-
-        partial void OnErrorMessageChanged(string value)
+        catch (Exception ex)
         {
-            OnPropertyChanged(nameof(HasError));
+            ErrorMessage = $"Ошибка сохранения: {ex.Message}";
         }
+    }
+
+    public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+
+    partial void OnErrorMessageChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasError));
     }
 }

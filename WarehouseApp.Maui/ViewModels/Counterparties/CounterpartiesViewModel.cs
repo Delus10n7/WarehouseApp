@@ -8,68 +8,67 @@ using WarehouseApp.Domain.Entities;
 using WarehouseApp.Application.Abstractions;
 using WarehouseApp.Maui.Services;
 
-namespace WarehouseApp.Maui.ViewModels.Counterparties
+namespace WarehouseApp.Maui.ViewModels.Counterparties;
+
+public partial class CounterpartiesViewModel : ObservableObject
 {
-    public partial class CounterpartiesViewModel : ObservableObject
+    private readonly ICounterpartyApiService _apiService;
+    private List<Counterparty> _allCounterparties = new();
+
+    [ObservableProperty] private bool isRefreshing;
+    [ObservableProperty] private string searchText = string.Empty;
+    public ObservableCollection<Counterparty> Counterparties { get; } = new();
+
+    public event Func<Counterparty, Task>? EditRequested;
+
+    public CounterpartiesViewModel(ICounterpartyApiService apiService)
     {
-        private readonly ICounterpartyApiService _apiService;
-        private List<Counterparty> _allCounterparties = new();
+        _apiService = apiService;
+    }
 
-        [ObservableProperty] private bool isRefreshing;
-        [ObservableProperty] private string searchText = string.Empty;
-        public ObservableCollection<Counterparty> Counterparties { get; } = new();
-
-        public event Func<Counterparty, Task>? EditRequested;
-
-        public CounterpartiesViewModel(ICounterpartyApiService apiService)
+    [RelayCommand]
+    public async Task LoadDataAsync()
+    {
+        IsRefreshing = true;
+        try
         {
-            _apiService = apiService;
-        }
-
-        [RelayCommand]
-        public async Task LoadDataAsync()
-        {
-            IsRefreshing = true;
-            try
-            {
-                _allCounterparties = await _apiService.GetAllAsync();
-                ApplyFilter();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Ошибка API: {ex.Message}");
-                _allCounterparties = new List<Counterparty>();
-                ApplyFilter();
-            }
-            finally
-            {
-                IsRefreshing = false;
-            }
-        }
-
-        partial void OnSearchTextChanged(string value)
-        {
+            _allCounterparties = await _apiService.GetAllAsync();
             ApplyFilter();
         }
-
-        private void ApplyFilter()
+        catch (Exception ex)
         {
-            Counterparties.Clear();
-            var filtered = string.IsNullOrWhiteSpace(SearchText)
-                ? _allCounterparties
-                : _allCounterparties.Where(c => c.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-
-            foreach (var item in filtered)
-            {
-                Counterparties.Add(item);
-            }
+            System.Diagnostics.Debug.WriteLine($"Ошибка API: {ex.Message}");
+            _allCounterparties = new List<Counterparty>();
+            ApplyFilter();
         }
-
-        [RelayCommand]
-        private async Task Edit(Counterparty counterparty)
+        finally
         {
-            if (EditRequested != null)
-                await EditRequested.Invoke(counterparty);
+            IsRefreshing = false;
         }
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        Counterparties.Clear();
+        var filtered = string.IsNullOrWhiteSpace(SearchText)
+            ? _allCounterparties
+            : _allCounterparties.Where(c => c.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+
+        foreach (var item in filtered)
+        {
+            Counterparties.Add(item);
+        }
+    }
+
+    [RelayCommand]
+    private async Task Edit(Counterparty counterparty)
+    {
+        if (EditRequested != null)
+            await EditRequested.Invoke(counterparty);
     }
 }
