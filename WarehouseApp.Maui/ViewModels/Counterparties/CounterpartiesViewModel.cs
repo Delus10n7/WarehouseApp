@@ -6,12 +6,13 @@ using System.Collections.ObjectModel;
 using System.Text;
 using WarehouseApp.Domain.Entities;
 using WarehouseApp.Interfaces.Abstractions;
+using WarehouseApp.Maui.Services;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties
 {
     public partial class CounterpartiesViewModel : ObservableObject
     {
-        private readonly ICounterpartyRepository _repository;
+        private readonly ICounterpartyApiService _apiService;
         private List<Counterparty> _allCounterparties = new();
 
         [ObservableProperty] private bool isRefreshing;
@@ -20,9 +21,9 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
 
         public event Func<Counterparty, Task>? EditRequested;
 
-        public CounterpartiesViewModel(ICounterpartyRepository repository)
+        public CounterpartiesViewModel(ICounterpartyApiService apiService)
         {
-            _repository = repository;
+            _apiService = apiService;
         }
 
         [RelayCommand]
@@ -31,13 +32,12 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
             IsRefreshing = true;
             try
             {
-                _allCounterparties = await _repository.GetAllAsync();
+                _allCounterparties = await _apiService.GetAllAsync();
                 ApplyFilter();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Ошибка загрузки БД: {ex.Message}");
-
+                System.Diagnostics.Debug.WriteLine($"Ошибка API: {ex.Message}");
                 _allCounterparties = new List<Counterparty>();
                 ApplyFilter();
             }

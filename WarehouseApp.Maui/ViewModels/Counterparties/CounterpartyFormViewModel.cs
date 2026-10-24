@@ -7,13 +7,14 @@ using System.Collections.Generic;
 using System.Text;
 using WarehouseApp.Domain.Entities;
 using WarehouseApp.Interfaces.Abstractions;
+using WarehouseApp.Maui.Services;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties
 {
     public partial class CounterpartyFormViewModel : ObservableObject
     {
         private readonly IPopupService _popupService;
-        private readonly ICounterpartyRepository _repository;
+        private readonly ICounterpartyApiService _apiService;
         private Counterparty? _entityToUpdate;
 
         [ObservableProperty] private string title = string.Empty;
@@ -26,11 +27,11 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
 
         public bool IsEditMode { get; }
 
-        // Конструктор для режима "Создание"
-        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyRepository repository)
+        // Конструктор для СОЗДАНИЯ
+        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService)
         {
             _popupService = popupService;
-            _repository = repository;
+            _apiService = apiService;
 
             IsEditMode = false;
             Title = "Создать контрагента";
@@ -38,11 +39,11 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
             ButtonColor = Color.FromArgb("#4CAF50");
         }
 
-        // Конструктор для режима "Редактирование"
-        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyRepository repository, Counterparty existingCounterparty)
+        // Конструктор для РЕДАКТИРОВАНИЯ
+        public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService, Counterparty existingCounterparty)
         {
             _popupService = popupService;
-            _repository = repository;
+            _apiService = apiService;
             _entityToUpdate = existingCounterparty;
 
             IsEditMode = true;
@@ -76,7 +77,7 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
                     _entityToUpdate.Name = Name.Trim();
                     _entityToUpdate.Phone = phoneToSave;
                     _entityToUpdate.Email = emailToSave;
-                    await _repository.UpdateAsync(_entityToUpdate);
+                    await _apiService.UpdateAsync(_entityToUpdate);
                 }
                 else
                 {
@@ -86,7 +87,7 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
                         Phone = phoneToSave,
                         Email = emailToSave
                     };
-                    await _repository.AddAsync(newCounterparty);
+                    await _apiService.AddAsync(newCounterparty);
                 }
 
                 if (Shell.Current != null)
@@ -97,7 +98,6 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка сохранения: {ex.Message}";
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
             }
         }
 

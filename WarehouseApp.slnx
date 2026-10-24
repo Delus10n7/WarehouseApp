@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="WarehouseApp.Api/WarehouseApp.Api.csproj" Id="a2d2eec1-df9e-492f-aaee-faac4e81c953" />
   <Project Path="WarehouseApp.Domain/WarehouseApp.Domain.csproj" />
   <Project Path="WarehouseApp.Infrastructure/WarehouseApp.Infrastructure.csproj" />
   <Project Path="WarehouseApp.Interfaces/WarehouseApp.Interfaces.csproj" />

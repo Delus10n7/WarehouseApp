@@ -1,7 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Services;
 using Microsoft.Extensions.Logging;
-using WarehouseApp.Infrastructure;
+using WarehouseApp.Maui.Services;
 
 namespace WarehouseApp.Maui
 {
@@ -32,13 +32,15 @@ namespace WarehouseApp.Maui
             {
                 handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
             });
-            string connectionString = "Server=10.0.2.2,1433; Database=WarehouseDb; User Id=sa; Password=P@ssw0rd1; TrustServerCertificate=True;";
+            string apiBaseUrl = "http://10.0.2.2:5273/";
 #else
-            string connectionString = "Server=localhost\\SQLEXPRESS; Database=WarehouseDb; Trusted_Connection=True; TrustServerCertificate=True;";
+            string apiBaseUrl = "http://localhost:5273/"; 
 #endif
-
-            // Infrastructure (EF Core, репозитории)
-            builder.Services.AddInfrastructure(connectionString);
+            builder.Services.AddHttpClient<ICounterpartyApiService, CounterpartyApiService>(client =>
+            {
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
 
             builder.Services.AddTransient<WarehouseApp.Maui.Views.Counterparties.CounterpartiesPage>();
 
