@@ -1,0 +1,26 @@
+<Project>
+  <PropertyGroup>
+    <!-- Базовые настройки для всех проектов -->
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);MVVMTK0045</WarningsNotAsErrors>
+
+    <!-- Управление версиями и сборкой -->
+    <Deterministic>true</Deterministic>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild> <!-- Включает проверку стиля из .editorconfig при сборке -->
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio> <!-- Ускоряет сборку в VS -->
+
+    <!-- Настройки для аудита NuGet-пакетов (безопасность) -->
+    <NuGetAudit>enable</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(UseMaui)' == 'true'">
+    <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation> <!-- Строгая компиляция XAML -->
+    <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation> <!-- Ускорение биндингов -->
+  
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);CA1416</WarningsNotAsErrors>
+  </PropertyGroup>
+</Project>

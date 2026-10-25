@@ -31,7 +31,7 @@ public partial class CounterpartiesPage : ContentPage
         await _viewModel.LoadDataAsync();
     }
 
-    private async void OnAddCounterpartyClicked(object sender, EventArgs e)
+    private async void OnAddCounterpartyClicked(object? sender, EventArgs e)
     {
         var formVm = new CounterpartyFormViewModel(_popupService, _apiService);
         var popup = new CounterpartyPopup(formVm);

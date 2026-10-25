@@ -11,7 +11,7 @@ public partial class CounterpartyPopup : Popup
         BindingContext = viewModel;
     }
 
-    private async void OnCloseTapped(object sender, TappedEventArgs e)
+    private async void OnCloseTapped(object? sender, TappedEventArgs e)
     {
         await CloseAsync();
     }
