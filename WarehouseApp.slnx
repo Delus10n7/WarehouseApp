@@ -13,4 +13,5 @@
     <Deploy Solution="Debug|*" />
   </Project>
   <Project Path="WarehouseApp.Migrations/WarehouseApp.Migrations.csproj" />
+  <Project Path="WarehouseApp.Tests/WarehouseApp.Tests.csproj" Id="cc842c38-2900-4b75-80ee-f3f2c11b9822" />
 </Solution>
