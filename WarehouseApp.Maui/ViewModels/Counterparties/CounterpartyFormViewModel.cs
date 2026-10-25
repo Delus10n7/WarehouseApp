@@ -11,23 +11,43 @@ using WarehouseApp.Maui.Services;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties;
 
+/// <summary>
+/// ViewModel для формы создания и редактирования контрагента.
+/// Содержит логику валидации и сохранения данных.
+/// </summary>
 public partial class CounterpartyFormViewModel : ObservableObject
 {
     private readonly IPopupService _popupService;
     private readonly ICounterpartyApiService _apiService;
     private Counterparty? _entityToUpdate;
 
+    /// <summary>Заголовок окна (меняется в зависимости от режима).</summary>
     [ObservableProperty] private string title = string.Empty;
+
+    /// <summary>Текст на кнопке сохранения.</summary>
     [ObservableProperty] private string buttonText = string.Empty;
+
+    /// <summary>Цвет кнопки сохранения.</summary>
     [ObservableProperty] private Color buttonColor = Colors.Transparent;
+
+    /// <summary>Имя контрагента.</summary>
     [ObservableProperty] private string name = string.Empty;
+
+    /// <summary>Телефон контрагента.</summary>
     [ObservableProperty] private string phone = string.Empty;
+
+    /// <summary>Email контрагента.</summary>
     [ObservableProperty] private string email = string.Empty;
+
+    /// <summary>Текст сообщения об ошибке валидации или сохранения.</summary>
     [ObservableProperty] private string errorMessage = string.Empty;
 
+    /// <summary>Флаг, указывающий, находится ли форма в режиме редактирования.</summary>
     public bool IsEditMode { get; }
 
-    // Конструктор для СОЗДАНИЯ
+    /// <summary>
+    /// Конструктор для создания нового контрагента.
+    /// </summary>
     public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService)
     {
         _popupService = popupService;
@@ -39,7 +59,9 @@ public partial class CounterpartyFormViewModel : ObservableObject
         ButtonColor = Color.FromArgb("#4CAF50");
     }
 
-    // Конструктор для РЕДАКТИРОВАНИЯ
+    /// <summary>
+    /// Конструктор для редактирования существующего контрагента.
+    /// </summary>
     public CounterpartyFormViewModel(IPopupService popupService, ICounterpartyApiService apiService, Counterparty existingCounterparty)
     {
         _popupService = popupService;
@@ -56,6 +78,9 @@ public partial class CounterpartyFormViewModel : ObservableObject
         Email = existingCounterparty.Email ?? string.Empty;
     }
 
+    /// <summary>
+    /// Команда сохранения данных. Выполняет валидацию и отправляет запрос на сервер.
+    /// </summary>
     [RelayCommand]
     private async Task SaveAsync()
     {
@@ -101,8 +126,12 @@ public partial class CounterpartyFormViewModel : ObservableObject
         }
     }
 
+    /// <summary>Флаг наличия ошибки для отображения в UI.</summary>
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
+    /// <summary>
+    /// Вызывается при изменении текста ошибки. Уведомляет UI об изменении свойства HasError.
+    /// </summary>
     partial void OnErrorMessageChanged(string value)
     {
         OnPropertyChanged(nameof(HasError));

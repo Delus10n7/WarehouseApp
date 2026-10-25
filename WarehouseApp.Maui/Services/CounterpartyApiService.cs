@@ -3,16 +3,23 @@ using WarehouseApp.Domain.Entities;
 
 namespace WarehouseApp.Maui.Services;
 
+/// <summary>
+/// Сервис для выполнения HTTP-запросов к API контрагентов.
+/// </summary>
 public class CounterpartyApiService : ICounterpartyApiService
 {
     private readonly HttpClient _httpClient;
 
-    // HttpClient будет внедряться через DI
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="CounterpartyApiService"/>.
+    /// </summary>
+    /// <param name="httpClient">Настроенный экземпляр HttpClient.</param>
     public CounterpartyApiService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
 
+    /// <inheritdoc />
     public async Task<List<Counterparty>> GetAllAsync(CancellationToken ct = default)
     {
         // Выполняем GET-запрос к api/counterparties
@@ -20,12 +27,14 @@ public class CounterpartyApiService : ICounterpartyApiService
         return result ?? new List<Counterparty>();
     }
 
+    /// <inheritdoc />
     public async Task<Counterparty?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         // Выполняем GET-запрос к api/counterparties/{id}
         return await _httpClient.GetFromJsonAsync<Counterparty>($"api/counterparties/{id}", ct);
     }
 
+    /// <inheritdoc />
     public async Task AddAsync(Counterparty counterparty, CancellationToken ct = default)
     {
         // Выполняем POST-запрос
@@ -33,6 +42,7 @@ public class CounterpartyApiService : ICounterpartyApiService
         response.EnsureSuccessStatusCode(); // Выбросит исключение, если ответ не 200 OK
     }
 
+    /// <inheritdoc />
     public async Task UpdateAsync(Counterparty counterparty, CancellationToken ct = default)
     {
         // Выполняем PUT-запрос
@@ -40,6 +50,7 @@ public class CounterpartyApiService : ICounterpartyApiService
         response.EnsureSuccessStatusCode();
     }
 
+    /// <inheritdoc />
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
         // Выполняем DELETE-запрос

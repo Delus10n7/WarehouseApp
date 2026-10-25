@@ -4,8 +4,14 @@ using System.Text;
 
 namespace WarehouseApp.Domain.Entities;
 
+/// <summary>
+/// Представляет единицу измерения товара (шт, кг, л, упак и т.д.).
+/// </summary>
 public class UnitOfMeasure
 {
+    /// Уникальный идентификатор единицы измерения.
     public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;  // шт, кг, л, упак
+
+    /// Название или сокращение единицы измерения.
+    public string Name { get; set; } = string.Empty;
 }
