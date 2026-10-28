@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using WarehouseApp.Domain.Entities;
 
-namespace WarehouseApp.Maui.Services;
+namespace WarehouseApp.Application.Services;
 
 /// <summary>
 /// Интерфейс сервиса для работы с API контрагентов.
@@ -35,4 +35,3 @@ public interface ICounterpartyApiService
     /// </summary>
     Task DeleteAsync(int id, CancellationToken ct = default);
 }
-

@@ -1,10 +1,16 @@
+using System.Text.Json.Serialization;
 using WarehouseApp.Infrastructure;
 
 // Создаем builder для настройки веб-приложения
 var builder = WebApplication.CreateBuilder(args);
 
 // Добавляем сервисы, необходимые для работы контроллеров
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Указываем сериализатору игнорировать циклические ссылки
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 // Настраиваем генератор Swagger (OpenAPI) для документирования и тестирования API
 builder.Services.AddEndpointsApiExplorer();

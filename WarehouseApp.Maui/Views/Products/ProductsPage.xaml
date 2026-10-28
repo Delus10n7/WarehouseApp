@@ -1,22 +1,143 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Name="page"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:WarehouseApp.Maui.Controls"
+    xmlns:vm="clr-namespace:WarehouseApp.Maui.ViewModels.Products"
+    xmlns:domain="clr-namespace:WarehouseApp.Domain.Entities;assembly=WarehouseApp.Domain"
     x:Class="WarehouseApp.Maui.Views.Products.ProductsPage"
+    x:DataType="vm:ProductsViewModel"
     BackgroundColor="{StaticResource Surface}"
     Shell.NavBarIsVisible="False">
 
-    <Grid RowDefinitions="*,Auto">
-        <ScrollView Grid.Row="0">
-            <VerticalStackLayout Padding="16,20">
-                <Label Text="Товары"
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource TextPrimary}" />
-            </VerticalStackLayout>
-        </ScrollView>
-
-        <controls:BottomTabBar Grid.Row="1" ActiveTab="products" />
+  <Grid RowDefinitions="Auto, Auto, *, Auto">
+    <!-- Шапка -->
+    <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,16,20,12">
+      <Label Text="Товары" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center"/>
+      <Button Grid.Column="1" Text="+" FontSize="24" WidthRequest="44" HeightRequest="44" CornerRadius="22" BackgroundColor="{StaticResource Primary}" TextColor="White" Padding="0" Clicked="OnAddProductClicked"/>
     </Grid>
+
+    <!-- Поиск и Фильтр (объединены в один блок) -->
+    <VerticalStackLayout Grid.Row="1" Margin="20,0,20,16" Spacing="16">
+
+      <!-- Поиск -->
+      <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+        <Border BackgroundColor="{StaticResource BackgroundColor}" StrokeThickness="0" Padding="12,0">
+          <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10" />
+          </Border.StrokeShape>
+          <Grid ColumnDefinitions="Auto, *">
+            <Label Text="&#xf002;" FontFamily="FontAwesomeSolid" FontSize="16" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" Margin="0,0,10,0"/>
+            <Entry Grid.Column="1" Text="{Binding SearchText}" Placeholder="Поиск по названию или артикулу..." PlaceholderColor="{StaticResource TextSecondary}" TextColor="{StaticResource TextPrimary}" BackgroundColor="Transparent" HeightRequest="44"/>
+          </Grid>
+        </Border>
+        <Button Grid.Column="1" 
+                Text="&#xf0b0;" 
+                FontFamily="FontAwesomeSolid" 
+                FontSize="18" 
+                TextColor="{StaticResource TextPrimary}" 
+                BackgroundColor="Transparent" 
+                WidthRequest="44" 
+                HeightRequest="44" 
+                Padding="0" 
+                Command="{Binding ToggleFilterCommand}">
+          <Button.Triggers>
+            <!-- Триггер: если панель фильтра открыта -->
+            <DataTrigger TargetType="Button" 
+                     Binding="{Binding IsFilterVisible}" 
+                     Value="True">
+              <!-- Меняем шрифт на заполненный (Solid) -->
+              <Setter Property="Text" Value="&#xe17b;" />
+            </DataTrigger>
+          </Button.Triggers>
+        </Button>
+      </Grid>
+
+      <!-- Панель фильтра -->
+      <Border BackgroundColor="{StaticResource Surface}" StrokeThickness="0" Padding="16" IsVisible="{Binding IsFilterVisible}">
+        <Border.StrokeShape>
+          <RoundRectangle CornerRadius="12" />
+        </Border.StrokeShape>
+        <Border.Shadow>
+          <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.1" />
+        </Border.Shadow>
+
+        <VerticalStackLayout Spacing="12">
+          <!-- Категория -->
+          <Grid ColumnDefinitions="100, *">
+            <Label Text="Категория" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+            <Border Grid.Column="1" BackgroundColor="{StaticResource BackgroundColor}" StrokeThickness="0" Padding="8,0">
+              <Border.StrokeShape>
+                <RoundRectangle CornerRadius="8" />
+              </Border.StrokeShape>
+              <Picker ItemsSource="{Binding AvailableCategories}" ItemDisplayBinding="{Binding Name}" SelectedItem="{Binding SelectedFilterCategory}" Title="Название" TextColor="{StaticResource TextPrimary}"/>
+            </Border>
+          </Grid>
+
+          <!-- Остаток -->
+          <Grid ColumnDefinitions="100, *">
+            <Label Text="Остаток" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+            <Border Grid.Column="1" BackgroundColor="{StaticResource BackgroundColor}" StrokeThickness="0" Padding="8,0">
+              <Border.StrokeShape>
+                <RoundRectangle CornerRadius="8" />
+              </Border.StrokeShape>
+              <Picker ItemsSource="{Binding StockOptions}" SelectedItem="{Binding SelectedStockFilter}" Title="По умолчанию" TextColor="{StaticResource TextPrimary}"/>
+            </Border>
+          </Grid>
+
+          <!-- Кнопки -->
+          <Grid ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,4,0,0">
+            <Button Text="Сбросить" BackgroundColor="{StaticResource Danger}" Command="{Binding ResetFiltersCommand}" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="40"/>
+            <Button Grid.Column="1" Text="Применить" BackgroundColor="{StaticResource Primary}" Command="{Binding ApplyFiltersCommand}" TextColor="White" FontAttributes="Bold" CornerRadius="8" HeightRequest="40"/>
+          </Grid>
+        </VerticalStackLayout>
+      </Border>
+    </VerticalStackLayout>
+
+    <!-- Список -->
+    <RefreshView Grid.Row="2" Command="{Binding LoadDataCommand}" IsRefreshing="{Binding IsRefreshing}" Margin="0,0,0,10">
+      <CollectionView ItemsSource="{Binding Products}" SelectionMode="None">
+        <CollectionView.EmptyView>
+          <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="12" Padding="40">
+            <Label Text="Товаров нет" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center" />
+            <Label Text="Добавьте первый товар с помощью кнопки «+»." FontSize="14" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+          </VerticalStackLayout>
+        </CollectionView.EmptyView>
+
+        <CollectionView.ItemTemplate>
+          <DataTemplate x:DataType="domain:Product">
+            <Grid Padding="10,8">
+              <Border BackgroundColor="{StaticResource Surface}" StrokeThickness="0" Margin="10,0" Padding="20,14">
+                <Border.StrokeShape>
+                  <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Border.Shadow>
+                  <Shadow Brush="Black" Offset="0,2" Radius="8" Opacity="0.25" />
+                </Border.Shadow>
+                <Border.GestureRecognizers>
+                  <TapGestureRecognizer Command="{Binding Source={x:Reference page}, Path=BindingContext.EditCommand}" CommandParameter="{Binding .}" />
+                </Border.GestureRecognizers>
+
+                <Grid ColumnDefinitions="60, *, 80">
+                  <!-- Левая колонка -->
+                  <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                    <Label Text="{Binding Article}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="{Binding Quantity, StringFormat='{0} шт.'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                  </VerticalStackLayout>
+
+                  <!-- Центр -->
+                  <Label Grid.Column="1" Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+
+                  <!-- Правая колонка -->
+                  <Label Grid.Column="2" Text="{Binding Category.Name}" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                </Grid>
+              </Border>
+            </Grid>
+          </DataTemplate>
+        </CollectionView.ItemTemplate>
+      </CollectionView>
+    </RefreshView>
+
+    <controls:BottomTabBar Grid.Row="3" ActiveTab="products" />
+  </Grid>
 </ContentPage>

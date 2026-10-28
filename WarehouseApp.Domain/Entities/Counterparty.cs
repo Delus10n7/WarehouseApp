@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace WarehouseApp.Domain.Entities;
 
@@ -23,5 +24,6 @@ public class Counterparty
     public string? Email { get; set; }
 
     /// Коллекция документов, связанных с данным контрагентом.
+    [JsonIgnore]
     public ICollection<WareDocument> Documents { get; set; } = new List<WareDocument>();
 }

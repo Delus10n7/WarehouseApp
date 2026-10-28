@@ -1,7 +1,11 @@
-﻿using System.Net.Http.Json;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http.Json;
+using System.Text;
+using WarehouseApp.Application.Services;
 using WarehouseApp.Domain.Entities;
 
-namespace WarehouseApp.Maui.Services;
+namespace WarehouseApp.Infrastructure.Services;
 
 /// <summary>
 /// Сервис для выполнения HTTP-запросов к API контрагентов.

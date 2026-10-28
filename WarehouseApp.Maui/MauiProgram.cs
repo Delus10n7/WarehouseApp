@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Services;
 using Microsoft.Extensions.Logging;
-using WarehouseApp.Maui.Services;
+using WarehouseApp.Application.Services;
+using WarehouseApp.Infrastructure;
+using WarehouseApp.Infrastructure.Services;
 
 namespace WarehouseApp.Maui;
 
@@ -47,14 +49,11 @@ public static class MauiProgram
         // Для Windows и iOS симулятора используем стандартный localhost
         string apiBaseUrl = "http://localhost:5273/"; 
 #endif
-        // Регистрируем HttpClient для работы с API контрагентов
-        builder.Services.AddHttpClient<ICounterpartyApiService, CounterpartyApiService>(client =>
-        {
-            client.BaseAddress = new Uri(apiBaseUrl);
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-        });
+        // Регистрация API сервисов
+        builder.Services.AddApiServices(apiBaseUrl);
 
         builder.Services.AddTransient<WarehouseApp.Maui.Views.Counterparties.CounterpartiesPage>();
+        builder.Services.AddTransient<WarehouseApp.Maui.Views.Products.ProductsPage>();
 
         return builder.Build();
     }

@@ -2,7 +2,7 @@
 using System.Net.Http.Json;
 using FluentAssertions;
 using WarehouseApp.Domain.Entities;
-using WarehouseApp.Maui.Services;
+using WarehouseApp.Infrastructure.Services;
 using Xunit;
 
 namespace WarehouseApp.Tests.Services;

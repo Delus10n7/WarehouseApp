@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NSubstitute;
 using WarehouseApp.Domain.Entities;
-using WarehouseApp.Maui.Services;
+using WarehouseApp.Application.Services;
 using WarehouseApp.Maui.ViewModels.Counterparties;
 
 namespace WarehouseApp.Tests.ViewModels;

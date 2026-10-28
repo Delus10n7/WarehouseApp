@@ -83,10 +83,10 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\WarehouseApp.Application\WarehouseApp.Application.csproj" />
+	  <ProjectReference Include="..\WarehouseApp.Infrastructure\WarehouseApp.Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="ViewModels\Products\" />
 	  <Folder Include="ViewModels\Reports\" />
 	  <Folder Include="ViewModels\Documents\" />
 	</ItemGroup>
@@ -102,6 +102,12 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Documents\DocumentsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Products\LookupPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Products\ProductPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Products\ProductsPage.xaml">

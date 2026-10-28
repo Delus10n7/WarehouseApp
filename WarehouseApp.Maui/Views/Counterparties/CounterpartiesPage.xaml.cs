@@ -3,7 +3,7 @@ using CommunityToolkit.Maui.Extensions;
 using Microsoft.Maui.Controls.Shapes;
 using WarehouseApp.Domain.Entities;
 using WarehouseApp.Application.Abstractions;
-using WarehouseApp.Maui.Services;
+using WarehouseApp.Application.Services;
 using WarehouseApp.Maui.ViewModels.Counterparties;
 
 namespace WarehouseApp.Maui.Views.Counterparties;

@@ -45,4 +45,6 @@ public interface IProductRepository
     /// <param name="id">Уникальный идентификатор товара.</param>
     /// <param name="ct">Токен отмены операции.</param>
     Task DeleteAsync(int id, CancellationToken ct = default);
+
+    Task<List<Product>> GetAllWithDetailsAsync(CancellationToken ct = default);
 }

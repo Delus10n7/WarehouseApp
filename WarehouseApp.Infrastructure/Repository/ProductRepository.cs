@@ -64,4 +64,15 @@ public class ProductRepository : IProductRepository
             await context.SaveChangesAsync(ct);
         }
     }
+
+    /// <inheritdoc />
+    public async Task<List<Product>> GetAllWithDetailsAsync(CancellationToken ct = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(ct);
+        return await context.Products
+            .Include(p => p.Category)
+            .Include(p => p.UnitOfMeasure)
+            .AsNoTracking()
+            .ToListAsync(ct);
+    }
 }

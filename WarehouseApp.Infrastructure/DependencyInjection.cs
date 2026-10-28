@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using WarehouseApp.Infrastructure.Repository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using WarehouseApp.Application.Abstractions;
+using WarehouseApp.Application.Services;
+using WarehouseApp.Infrastructure.Repository;
+using WarehouseApp.Infrastructure.Services;
 
 namespace WarehouseApp.Infrastructure;
 
@@ -35,6 +37,30 @@ this IServiceCollection services, string connectionString)
         // Регистрируем репозитории
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICounterpartyRepository, CounterpartyRepository>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddApiServices(this IServiceCollection services, string apiBaseUrl)
+    {
+        // Регистрируем все API сервисы
+        services.AddHttpClient<ICounterpartyApiService, CounterpartyApiService>(client =>
+        {
+            client.BaseAddress = new Uri(apiBaseUrl);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+
+        services.AddHttpClient<IProductApiService, ProductApiService>(client =>
+        {
+            client.BaseAddress = new Uri(apiBaseUrl);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
+
+        services.AddHttpClient<ILookupApiService, LookupApiService>(client =>
+        {
+            client.BaseAddress = new Uri(apiBaseUrl);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        });
 
         return services;
     }
