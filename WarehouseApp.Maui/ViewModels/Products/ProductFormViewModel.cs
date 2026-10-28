@@ -152,7 +152,11 @@ public partial class ProductFormViewModel : ObservableObject
                 };
                 await _productService.AddAsync(newProduct);
             }
-            await _popupService.ClosePopupAsync(Shell.Current.Navigation);
+
+            if (Shell.Current != null)
+            {
+                await _popupService.ClosePopupAsync(Shell.Current.Navigation);
+            }
         }
         catch (Exception ex)
         {
