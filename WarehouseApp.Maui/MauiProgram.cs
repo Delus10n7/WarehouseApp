@@ -43,6 +43,12 @@ public static class MauiProgram
         {
             handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
         });
+        // Убираем подчеркивание у Picker
+        Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+        {
+            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+        });
+
         // Для эмулятора Android используем специальный IP-адрес для доступа к localhost компьютера
         string apiBaseUrl = "http://10.0.2.2:5273/";
 #else
