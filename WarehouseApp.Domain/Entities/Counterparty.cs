@@ -1,25 +1,32 @@
-﻿using System.Text.Json.Serialization;
-
-namespace WarehouseApp.Domain.Entities;
+﻿namespace WarehouseApp.Domain.Entities;
 
 /// <summary>
 /// Представляет контрагента (поставщика или покупателя).
 /// </summary>
 public class Counterparty
 {
-    /// Уникальный идентификатор контрагента.
+    /// <summary>
+    /// Уникальный идентификатор контрагента (первичный ключ).
+    /// </summary>
     public int Id { get; set; }
 
+    /// <summary>
     /// Наименование организации или ФИО контрагента.
+    /// </summary>
     public string Name { get; set; } = string.Empty;
 
-    /// Контактный телефон (необязательное поле).
+    /// <summary>
+    /// Контактный телефон
+    /// </summary>
     public string? Phone { get; set; }
 
-    /// Электронная почта (необязательное поле).
+    /// <summary>
+    /// Электронная почта
+    /// </summary>
     public string? Email { get; set; }
 
-    /// Коллекция документов, связанных с данным контрагентом.
-    [JsonIgnore]
+    /// <summary>
+    /// Коллекция документов, связанных с данным контрагентом (обратная навигация one-to-many).
+    /// </summary>
     public ICollection<WareDocument> Documents { get; set; } = new List<WareDocument>();
 }

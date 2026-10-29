@@ -1,14 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using WarehouseApp.Domain.Entities;
 using WarehouseApp.Application.Abstractions;
+using WarehouseApp.Domain.Entities;
 
 namespace WarehouseApp.Infrastructure.Repository;
 
 /// <summary>
-/// Реализация репозитория для работы с контрагентами в базе данных.
+/// Реализация <see cref="ICounterpartyRepository"/> на EF Core.
 /// </summary>
 public class CounterpartyRepository : ICounterpartyRepository
 {
@@ -17,44 +14,57 @@ public class CounterpartyRepository : ICounterpartyRepository
     /// <summary>
     /// Инициализирует новый экземпляр репозитория контрагентов.
     /// </summary>
-    /// <param name="contextFactory">Фабрика для создания экземпляров <see cref="WarehouseDbContext"/>.</param>
+    /// <param name="contextFactory">Фабрика контекстов БД (scoped через DI).</param>
     public CounterpartyRepository(IDbContextFactory<WarehouseDbContext> contextFactory)
     {
         _contextFactory = contextFactory;
     }
 
     /// <inheritdoc />
-    public async Task<List<Counterparty>> GetAllAsync(CancellationToken ct = default)
+    public async Task<IReadOnlyList<Counterparty>> GetAllAsync(CancellationToken ct = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(ct);
         return await context.Counterparties.AsNoTracking().ToListAsync(ct);
     }
 
     /// <inheritdoc />
-    public async Task AddAsync(Counterparty counterparty, CancellationToken ct = default)
+    public async Task<Counterparty?> GetByIdAsync(int id, CancellationToken ct = default)
+    {
+        await using var context = await _contextFactory.CreateDbContextAsync(ct);
+        return await context.Counterparties.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id, ct);
+    }
+
+    /// <inheritdoc />
+    public async Task<Counterparty> AddAsync(Counterparty counterparty, CancellationToken ct = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(ct);
         context.Counterparties.Add(counterparty);
         await context.SaveChangesAsync(ct);
+        return counterparty;
     }
 
     /// <inheritdoc />
     public async Task UpdateAsync(Counterparty counterparty, CancellationToken ct = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(ct);
-        context.Counterparties.Update(counterparty);
+
+        context.Counterparties.Attach(counterparty);
+        context.Entry(counterparty).State = EntityState.Modified;
+        context.Entry(counterparty).Collection(c => c.Documents).IsModified = false;
+
         await context.SaveChangesAsync(ct);
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(ct);
-        var counterparty = await context.Counterparties.FindAsync(new object[] { id }, ct);
-        if (counterparty != null)
-        {
-            context.Counterparties.Remove(counterparty);
-            await context.SaveChangesAsync(ct);
-        }
+        var entity = await context.Counterparties.FindAsync(new object[] { id }, ct);
+        if (entity is null) return false;
+
+        context.Counterparties.Remove(entity);
+        await context.SaveChangesAsync(ct);
+        return true;
     }
 }

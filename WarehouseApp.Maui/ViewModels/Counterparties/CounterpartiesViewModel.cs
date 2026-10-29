@@ -1,45 +1,43 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text;
-using WarehouseApp.Domain.Entities;
-using WarehouseApp.Application.Abstractions;
+using Microsoft.Extensions.Logging;
+using WarehouseApp.Application.Dtos.CounterpartyDtos;
 using WarehouseApp.Application.Services;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties;
 
 /// <summary>
-/// ViewModel для страницы списка контрагентов. 
-/// Управляет загрузкой данных, фильтрацией и обработкой событий.
+/// ViewModel страницы списка контрагентов. Загрузка, поиск, событие редактирования.
 /// </summary>
 public partial class CounterpartiesViewModel : ObservableObject
 {
     private readonly ICounterpartyApiService _apiService;
-    private List<Counterparty> _allCounterparties = new();
+    private readonly ILogger<CounterpartiesViewModel> _logger;
 
-    /// <summary>Индикатор того, что в данный момент выполняется загрузка данных.</summary>
+    private List<CounterpartyDto> _allCounterparties = new();
+
+    /// <summary>Флаг «идёт обновление» (для RefreshView).</summary>
     [ObservableProperty] private bool isRefreshing;
 
-    /// <summary>Текст для поиска и фильтрации контрагентов по имени.</summary>
+    /// <summary>Текст поиска по имени.</summary>
     [ObservableProperty] private string searchText = string.Empty;
 
-    /// <summary>Коллекция отфильтрованных контрагентов, привязанная к UI.</summary>
-    public ObservableCollection<Counterparty> Counterparties { get; } = new();
+    /// <summary>Отфильтрованный список контрагентов, привязанный к UI.</summary>
+    public ObservableCollection<CounterpartyDto> Counterparties { get; } = new();
+
+    /// <summary>Событие: пользователь нажал на карточку — нужно открыть форму редактирования.</summary>
+    public event Func<CounterpartyDto, Task>? EditRequested;
 
     /// <summary>
-    /// Событие, запрашивающее открытие формы редактирования для выбранного контрагента.
+    /// Инициализирует новый экземпляр <see cref="CounterpartiesViewModel"/>.
     /// </summary>
-    public event Func<Counterparty, Task>? EditRequested;
-
-    /// <summary>
-    /// Инициализирует новый экземпляр класса <see cref="CounterpartiesViewModel"/>.
-    /// </summary>
-    /// <param name="apiService">Сервис для работы с API.</param>
-    public CounterpartiesViewModel(ICounterpartyApiService apiService)
+    public CounterpartiesViewModel(
+        ICounterpartyApiService apiService,
+        ILogger<CounterpartiesViewModel> logger)
     {
         _apiService = apiService;
+        _logger = logger;
     }
 
     /// <summary>
@@ -56,8 +54,8 @@ public partial class CounterpartiesViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Ошибка API: {ex.Message}");
-            _allCounterparties = new List<Counterparty>();
+            _logger.LogError(ex, "Ошибка загрузки контрагентов");
+            _allCounterparties = new();
             ApplyFilter();
         }
         finally
@@ -66,36 +64,27 @@ public partial class CounterpartiesViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// Вызывается при изменении текста в поле поиска. Применяет фильтрацию.
-    /// </summary>
-    partial void OnSearchTextChanged(string value)
-    {
-        ApplyFilter();
-    }
+    partial void OnSearchTextChanged(string value) => ApplyFilter();
 
     /// <summary>
-    /// Фильтрует исходный список контрагентов на основе введенного текста поиска.
+    /// Фильтрует исходный список по введённому тексту.
     /// </summary>
     private void ApplyFilter()
     {
         Counterparties.Clear();
         var filtered = string.IsNullOrWhiteSpace(SearchText)
             ? _allCounterparties
-            : _allCounterparties.Where(c => c.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            : _allCounterparties.Where(c =>
+                c.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
 
-        foreach (var item in filtered)
-        {
-            Counterparties.Add(item);
-        }
+        foreach (var item in filtered) Counterparties.Add(item);
     }
 
     /// <summary>
-    /// Команда для вызова события редактирования контрагента.
+    /// Команда редактирования: поднимает событие <see cref="EditRequested"/>.
     /// </summary>
-    /// <param name="counterparty">Контрагент для редактирования.</param>
     [RelayCommand]
-    private async Task Edit(Counterparty counterparty)
+    private async Task Edit(CounterpartyDto counterparty)
     {
         if (EditRequested != null)
             await EditRequested.Invoke(counterparty);

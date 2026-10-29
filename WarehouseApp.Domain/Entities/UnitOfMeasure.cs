@@ -5,9 +5,13 @@
 /// </summary>
 public class UnitOfMeasure
 {
-    /// Уникальный идентификатор единицы измерения.
+    /// <summary>
+    /// Уникальный идентификатор единицы измерения (первичный ключ).
+    /// </summary>
     public int Id { get; set; }
 
+    /// <summary>
     /// Название или сокращение единицы измерения.
+    /// </summary>
     public string Name { get; set; } = string.Empty;
 }

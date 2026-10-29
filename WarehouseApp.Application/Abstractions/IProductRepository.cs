@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WarehouseApp.Domain.Entities;
+﻿using WarehouseApp.Domain.Entities;
 
 namespace WarehouseApp.Application.Abstractions;
 
@@ -15,7 +12,7 @@ public interface IProductRepository
     /// </summary>
     /// <param name="ct">Токен отмены операции.</param>
     /// <returns>Список товаров.</returns>
-    Task<List<Product>> GetAllAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно получает товар по его идентификатору.
@@ -30,7 +27,8 @@ public interface IProductRepository
     /// </summary>
     /// <param name="product">Объект товара для добавления.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    Task AddAsync(Product product, CancellationToken ct = default);
+    /// <returns>Созданный объект товара.</returns>
+    Task<Product> AddAsync(Product product, CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно обновляет данные существующего товара.
@@ -44,11 +42,13 @@ public interface IProductRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор товара.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    Task DeleteAsync(int id, CancellationToken ct = default);
+    /// <returns>true если объект найден и удален.</returns>
+    Task<bool> DeleteAsync(int id, CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно получает список всех товаров c категориями и единицами измерения.
     /// </summary>
     /// <param name="ct">Токен отмены операции.</param>
-    Task<List<Product>> GetAllWithDetailsAsync(CancellationToken ct = default);
+    /// <returns>Список товаров.</returns>
+    Task<IReadOnlyList<Product>> GetAllWithDetailsAsync(CancellationToken ct = default);
 }

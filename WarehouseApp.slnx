@@ -8,6 +8,7 @@
   <Project Path="WarehouseApp.Api/WarehouseApp.Api.csproj" Id="a2d2eec1-df9e-492f-aaee-faac4e81c953" />
   <Project Path="WarehouseApp.Application/WarehouseApp.Application.csproj" />
   <Project Path="WarehouseApp.Domain/WarehouseApp.Domain.csproj" />
+  <Project Path="WarehouseApp.Infrastructure.Client/WarehouseApp.Infrastructure.Client.csproj" Id="a2ddc751-660c-43e1-af1b-d536422239e6" />
   <Project Path="WarehouseApp.Infrastructure/WarehouseApp.Infrastructure.csproj" />
   <Project Path="WarehouseApp.Maui/WarehouseApp.Maui.csproj">
     <Deploy Solution="Debug|*" />

@@ -1,15 +1,15 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Services;
 using Microsoft.Extensions.Logging;
-using WarehouseApp.Application.Services;
-using WarehouseApp.Infrastructure;
-using WarehouseApp.Infrastructure.Services;
+using WarehouseApp.Infrastructure.Client;
+using WarehouseApp.Maui.ViewModels.Counterparties;
+using WarehouseApp.Maui.ViewModels.Products;
 
 namespace WarehouseApp.Maui;
 
 /// <summary>
 /// Точка входа и конфигурация приложения .NET MAUI.
-/// Настраивает шрифты, зависимости (DI) и специфичные для платформы параметры.
+/// Настраивает шрифты, DI-контейнер, платформо-специфичные хендлеры и API-базовый URL.
 /// </summary>
 public static class MauiProgram
 {
@@ -38,26 +38,31 @@ public static class MauiProgram
 #endif
 
 #if ANDROID
-        // Убираем стандартную нижнюю линию (underline) у полей ввода Entry на Android
+        // Убираем стандартную нижнюю линию у Entry и Picker на Android.
         Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
         {
-            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+            handler.PlatformView.BackgroundTintList =
+                Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
         });
-        // Убираем подчеркивание у Picker
         Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
         {
-            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+            handler.PlatformView.BackgroundTintList =
+                Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
         });
 
-        // Для эмулятора Android используем специальный IP-адрес для доступа к localhost компьютера
         string apiBaseUrl = "http://10.0.2.2:5273/";
 #else
-        // Для Windows и iOS симулятора используем стандартный localhost
-        string apiBaseUrl = "http://localhost:5273/"; 
+        string apiBaseUrl = "http://localhost:5273/";
 #endif
-        // Регистрация API сервисов
+
+        // Регистрирует типизированные HttpClient'ы для клиентских API-сервисов.
         builder.Services.AddApiServices(apiBaseUrl);
 
+        // ViewModel'и страниц — Transient (новый экземпляр на каждый переход).
+        builder.Services.AddTransient<CounterpartiesViewModel>();
+        builder.Services.AddTransient<ProductsViewModel>();
+
+        // Страницы, которым нужны зависимости через конструктор.
         builder.Services.AddTransient<WarehouseApp.Maui.Views.Counterparties.CounterpartiesPage>();
         builder.Services.AddTransient<WarehouseApp.Maui.Views.Products.ProductsPage>();
 

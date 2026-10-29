@@ -24,7 +24,6 @@ public partial class LookupPopupViewModel : ObservableObject
         Title = title;
         Placeholder = placeholder;
         ButtonText = buttonText;
-        Name = string.Empty;
     }
 
     /// <summary>

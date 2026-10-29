@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:WarehouseApp.Maui.Controls"
     xmlns:vm="clr-namespace:WarehouseApp.Maui.ViewModels.Counterparties"
-    xmlns:domain="clr-namespace:WarehouseApp.Domain.Entities;assembly=WarehouseApp.Domain"
+    xmlns:dto="clr-namespace:WarehouseApp.Application.Dtos.CounterpartyDtos;assembly=WarehouseApp.Application"
     x:Class="WarehouseApp.Maui.Views.Counterparties.CounterpartiesPage"
     x:DataType="vm:CounterpartiesViewModel"
     BackgroundColor="{StaticResource Surface}"
@@ -48,7 +48,7 @@
 
                 <!-- Карточка контрагента -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="domain:Counterparty">
+                    <DataTemplate x:DataType="dto:CounterpartyDto">
                         <Grid Padding="10,8">
                             <Border BackgroundColor="{StaticResource Surface}" 
                                     StrokeThickness="0"

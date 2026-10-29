@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:controls="clr-namespace:WarehouseApp.Maui.Controls"
     xmlns:vm="clr-namespace:WarehouseApp.Maui.ViewModels.Products"
-    xmlns:domain="clr-namespace:WarehouseApp.Domain.Entities;assembly=WarehouseApp.Domain"
+    xmlns:dto="clr-namespace:WarehouseApp.Application.Dtos.ProductDtos;assembly=WarehouseApp.Application"
     x:Class="WarehouseApp.Maui.Views.Products.ProductsPage"
     x:DataType="vm:ProductsViewModel"
     BackgroundColor="{StaticResource Surface}"
@@ -105,7 +105,7 @@
         </CollectionView.EmptyView>
 
         <CollectionView.ItemTemplate>
-          <DataTemplate x:DataType="domain:Product">
+          <DataTemplate x:DataType="dto:ProductDto">
             <Grid Padding="10,8">
               <Border BackgroundColor="{StaticResource Surface}" StrokeThickness="0" Margin="10,0" Padding="20,14">
                 <Border.StrokeShape>
@@ -129,7 +129,7 @@
                   <Label Grid.Column="1" Text="{Binding Name}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" LineBreakMode="TailTruncation" />
 
                   <!-- Правая колонка -->
-                  <Label Grid.Column="2" Text="{Binding Category.Name}" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="End" VerticalOptions="Center" />
+                  <Label Grid.Column="2" Text="{Binding CategoryName}" FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="End" VerticalOptions="Center" />
                 </Grid>
               </Border>
             </Grid>

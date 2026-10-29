@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WarehouseApp.Domain.Entities;
+﻿using WarehouseApp.Domain.Entities;
 
 namespace WarehouseApp.Application.Abstractions;
 
@@ -15,14 +12,23 @@ public interface ICounterpartyRepository
     /// </summary>
     /// <param name="ct">Токен отмены операции.</param>
     /// <returns>Список контрагентов.</returns>
-    Task<List<Counterparty>> GetAllAsync(CancellationToken ct = default);
+    Task<IReadOnlyList<Counterparty>> GetAllAsync(CancellationToken ct = default);
+
+    /// <summary>
+    /// Асинхронно получает контрагента по идентификатору.
+    /// </summary>
+    /// <param name="id">Уникальный идентификатор контрагента.</param>
+    /// <param name="ct">Токен отмены операции.</param>
+    /// <returns>Объект контрагента или <c>null</c>, если не найден.</returns>
+    Task<Counterparty?> GetByIdAsync(int id, CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно добавляет нового контрагента в базу данных.
     /// </summary>
     /// <param name="counterparty">Объект контрагента для добавления.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    Task AddAsync(Counterparty counterparty, CancellationToken ct = default);
+    /// <returns>Созданный объект контрагента.</returns>
+    Task<Counterparty> AddAsync(Counterparty counterparty, CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно обновляет данные существующего контрагента.
@@ -36,5 +42,6 @@ public interface ICounterpartyRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор контрагента.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    Task DeleteAsync(int id, CancellationToken ct = default);
+    /// <returns>true если нашли и удалили объект</returns>
+    Task<bool> DeleteAsync(int id, CancellationToken ct = default);
 }

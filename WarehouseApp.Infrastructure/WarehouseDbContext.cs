@@ -1,16 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Text;
-using WarehouseApp.Domain.Entities;
 using WarehouseApp.Application.Abstractions;
+using WarehouseApp.Domain.Entities;
 
 namespace WarehouseApp.Infrastructure;
 
 /// <summary>
 /// Контекст базы данных Entity Framework Core для складского приложения.
-/// Предоставляет доступ к таблицам и управляет отслеживанием изменений.
+/// Реализует <see cref="IWarehouseDbContext"/> для использования в слое Application/Api.
 /// </summary>
 public class WarehouseDbContext : DbContext, IWarehouseDbContext
 {
@@ -39,13 +35,27 @@ public class WarehouseDbContext : DbContext, IWarehouseDbContext
     /// <summary>Таблица позиций (строк) документов.</summary>
     public DbSet<WareDocumentItem> DocumentItems => Set<WareDocumentItem>();
 
+    // ---------- Явная реализация IWarehouseDbContext ----------
+    // DbSet<T> реализует IQueryable<T>, но компилятор не приводит типы автоматически.
+
+    IQueryable<Product> IWarehouseDbContext.Products => Products;
+    IQueryable<Category> IWarehouseDbContext.Categories => Categories;
+    IQueryable<UnitOfMeasure> IWarehouseDbContext.UnitsOfMeasure => UnitsOfMeasure;
+    IQueryable<Counterparty> IWarehouseDbContext.Counterparties => Counterparties;
+    IQueryable<WareDocument> IWarehouseDbContext.Documents => Documents;
+    IQueryable<WareDocumentItem> IWarehouseDbContext.DocumentItems => DocumentItems;
+
+    void IWarehouseDbContext.Add<T>(T entity) => Set<T>().Add(entity);
+    void IWarehouseDbContext.Update<T>(T entity) => Set<T>().Update(entity);
+    void IWarehouseDbContext.Remove<T>(T entity) => Set<T>().Remove(entity);
+
     /// <summary>
-    /// Настраивает модель базы данных при её создании, применяя конфигурации из текущей сборки.
+    /// Настраивает модель базы данных, применяя все <c>IEntityTypeConfiguration</c>
+    /// из текущей сборки (папка Configurations).
     /// </summary>
     /// <param name="modelBuilder">Построитель модели EF Core.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Автоматически применяет все классы, реализующие IEntityTypeConfiguration из этой сборки
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(WarehouseDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }

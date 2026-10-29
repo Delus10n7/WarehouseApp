@@ -1,8 +1,6 @@
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Extensions;
-using Microsoft.Maui.Controls.Shapes;
-using WarehouseApp.Domain.Entities;
-using WarehouseApp.Application.Abstractions;
+using WarehouseApp.Application.Dtos.CounterpartyDtos;
 using WarehouseApp.Application.Services;
 using WarehouseApp.Maui.ViewModels.Counterparties;
 
@@ -18,53 +16,72 @@ public partial class CounterpartiesPage : ContentPage
     private readonly CounterpartiesViewModel _viewModel;
 
     /// <summary>
-    /// Инициализирует новый экземпляр класса <see cref="CounterpartiesPage"/>.
+    /// Инициализирует новый экземпляр страницы. Все зависимости приходят через DI.
     /// </summary>
-    /// <param name="popupService">Сервис для отображения всплывающих окон.</param>
-    /// <param name="apiService">Сервис для работы с API контрагентов.</param>
-    public CounterpartiesPage(IPopupService popupService, ICounterpartyApiService apiService)
+    /// <param name="popupService">Сервис показа модальных окон.</param>
+    /// <param name="apiService">Клиент API контрагентов (нужен для открытия формы).</param>
+    /// <param name="viewModel">ViewModel страницы (регистрируется в DI).</param>
+    public CounterpartiesPage(
+        IPopupService popupService,
+        ICounterpartyApiService apiService,
+        CounterpartiesViewModel viewModel)
     {
         InitializeComponent();
         _popupService = popupService;
         _apiService = apiService;
+        _viewModel = viewModel;
 
-        _viewModel = new CounterpartiesViewModel(_apiService);
         _viewModel.EditRequested += OnEditRequested;
         BindingContext = _viewModel;
     }
 
     /// <summary>
-    /// Вызывается при появлении страницы на экране. Загружает данные с сервера.
+    /// Вызывается при появлении страницы на экране. Загружает контрагентов с сервера.
     /// </summary>
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _viewModel.LoadDataAsync();
+        try
+        {
+            await _viewModel.LoadDataAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"OnAppearing failed: {ex}");
+        }
     }
 
     /// <summary>
-    /// Обработчик нажатия на кнопку добавления "+". Открывает модальное окно для создания контрагента.
+    /// Обработчик нажатия на кнопку «+»: открывает форму создания контрагента.
     /// </summary>
     private async void OnAddCounterpartyClicked(object? sender, EventArgs e)
     {
-        var formVm = new CounterpartyFormViewModel(_popupService, _apiService);
-        var popup = new CounterpartyPopup(formVm);
-        await this.ShowPopupAsync(popup, new PopupOptions { Shape = null });
-
-        // Обновляем список после закрытия попапа
-        await _viewModel.LoadDataAsync();
+        await OpenFormAsync(null);
     }
 
     /// <summary>
-    /// Обработчик события запроса редактирования контрагента (нажатие на карточку).
+    /// Обработчик события редактирования: открывает форму с существующим контрагентом.
     /// </summary>
-    private async Task OnEditRequested(Counterparty counterparty)
+    private async Task OnEditRequested(CounterpartyDto counterparty)
     {
-        var formVm = new CounterpartyFormViewModel(_popupService, _apiService, counterparty);
+        await OpenFormAsync(counterparty);
+    }
+
+    /// <summary>
+    /// Открывает модальную форму контрагента (создание или редактирование)
+    /// и после закрытия перезагружает список.
+    /// </summary>
+    /// <param name="existing">Существующий DTO для редактирования, либо <c>null</c> для создания.</param>
+    private async Task OpenFormAsync(CounterpartyDto? existing)
+    {
+        var formVm = existing is null
+            ? new CounterpartyFormViewModel(_popupService, _apiService)
+            : new CounterpartyFormViewModel(_popupService, _apiService, existing);
+
         var popup = new CounterpartyPopup(formVm);
         await this.ShowPopupAsync(popup, new PopupOptions { Shape = null });
 
-        // Обновляем список после закрытия попапа
+        // Перезагружаем список после закрытия — простая, но рабочая стратегия.
         await _viewModel.LoadDataAsync();
     }
 }

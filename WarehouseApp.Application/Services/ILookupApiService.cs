@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WarehouseApp.Domain.Entities;
+﻿using WarehouseApp.Application.Dtos.CategoryDtos;
+using WarehouseApp.Application.Dtos.UnitOfMeasureDtos;
 
 namespace WarehouseApp.Application.Services;
 
@@ -15,26 +13,26 @@ public interface ILookupApiService
     /// </summary>
     /// <param name="ct">Токен отмены операции.</param>
     /// <returns>Список категорий.</returns>
-    Task<List<Category>> GetCategoriesAsync();
+    Task<List<CategoryDto>> GetCategoriesAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно добавляет новую категорию в базу данных.
     /// </summary>
     /// <param name="category">Объект категория для добавления.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    Task<Category> AddCategoryAsync(Category category);
+    Task<CategoryDto> AddCategoryAsync(CategoryCreateDto category, CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно получает список всех единиц измерения.
     /// </summary>
     /// <param name="ct">Токен отмены операции.</param>
     /// <returns>Список единиц измерения.</returns>
-    Task<List<UnitOfMeasure>> GetUnitsAsync();
+    Task<List<UnitOfMeasureDto>> GetUnitsAsync(CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно добавляет новую единицу измерения в базу данных.
     /// </summary>
     /// <param name="unit">Объект единица измерения для добавления.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    Task<UnitOfMeasure> AddUnitAsync(UnitOfMeasure unit);
+    Task<UnitOfMeasureDto> AddUnitAsync(UnitOfMeasureCreateDto unit, CancellationToken ct = default);
 }

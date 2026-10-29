@@ -1,66 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using WarehouseApp.Application.Abstractions;
-using WarehouseApp.Application.Services;
 using WarehouseApp.Infrastructure.Repository;
-using WarehouseApp.Infrastructure.Services;
 
 namespace WarehouseApp.Infrastructure;
 
 /// <summary>
-/// Статический класс для настройки и регистрации зависимостей (Dependency Injection) 
-/// инфраструктурного слоя приложения.
+/// Регистрация зависимостей серверного инфраструктурного слоя:
+/// DbContext, репозитории, единица работы (<see cref="IWarehouseDbContext"/>).
 /// </summary>
 public static class DependencyInjection
 {
     /// <summary>
-    /// Расширяющий метод для регистрации инфраструктурных сервисов в DI-контейнере.
+    /// Регистрирует <see cref="WarehouseDbContext"/> через фабрику, репозитории
+    /// и scoped-обёртку <see cref="IWarehouseDbContext"/> для контроллеров.
     /// </summary>
     /// <param name="services">Коллекция сервисов приложения.</param>
-    /// <param name="connectionString">Строка подключения к базе данных SQL Server.</param>
-    /// <returns>Обновленная коллекция сервисов.</returns>
+    /// <param name="connectionString">Строка подключения к SQL Server.</param>
+    /// <returns>Та же коллекция (для chaining).</returns>
     public static IServiceCollection AddInfrastructure(
-this IServiceCollection services, string connectionString)
+        this IServiceCollection services, string connectionString)
     {
-        // Регистрируем фабрику контекстов базы данных. 
-        // Использование фабрики гарантирует потокобезопасность и корректное время жизни DbContext в мобильных приложениях.
+        // Фабрика контекста: каждый метод репозитория создаёт свой DbContext
         services.AddDbContextFactory<WarehouseDbContext>(options =>
             options.UseSqlServer(connectionString, sqlServerOptions =>
             {
-                // Включаем политику повторных попыток при временных сбоях сети (до 5 попыток с задержкой).
+                // Retry-on-failure: 5 попыток с максимальной задержкой 10с.
                 sqlServerOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             }));
 
-        // Регистрируем репозитории
+        // Скалярная обёртка IWarehouseDbContext: создаётся на HTTP-запрос из фабрики.
+        services.AddScoped<IWarehouseDbContext>(sp =>
+            sp.GetRequiredService<IDbContextFactory<WarehouseDbContext>>().CreateDbContext());
+
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICounterpartyRepository, CounterpartyRepository>();
-
-        return services;
-    }
-
-    public static IServiceCollection AddApiServices(this IServiceCollection services, string apiBaseUrl)
-    {
-        // Регистрируем все API сервисы
-        services.AddHttpClient<ICounterpartyApiService, CounterpartyApiService>(client =>
-        {
-            client.BaseAddress = new Uri(apiBaseUrl);
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-        });
-
-        services.AddHttpClient<IProductApiService, ProductApiService>(client =>
-        {
-            client.BaseAddress = new Uri(apiBaseUrl);
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-        });
-
-        services.AddHttpClient<ILookupApiService, LookupApiService>(client =>
-        {
-            client.BaseAddress = new Uri(apiBaseUrl);
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-        });
 
         return services;
     }

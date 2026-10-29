@@ -5,6 +5,9 @@
 /// </summary>
 public enum WareDocumentType
 {
-    Receipt = 1,   // Поступление
-    Sale = 2       // Продажа
+    /// <summary>Поступление товара на склад (приходная накладная).</summary>
+    Receipt = 1,
+
+    /// <summary>Продажа / отгрузка товара со склада (расходная накладная).</summary>
+    Sale = 2
 }

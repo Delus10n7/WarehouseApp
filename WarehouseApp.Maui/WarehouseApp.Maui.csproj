@@ -68,22 +68,15 @@
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="15.0.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.13" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.13" />
-		<PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\WarehouseApp.Application\WarehouseApp.Application.csproj" />
-	  <ProjectReference Include="..\WarehouseApp.Infrastructure\WarehouseApp.Infrastructure.csproj" />
+	  <ProjectReference Include="..\WarehouseApp.Infrastructure.Client\WarehouseApp.Infrastructure.Client.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
