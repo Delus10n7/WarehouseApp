@@ -46,5 +46,9 @@ public interface IProductRepository
     /// <param name="ct">Токен отмены операции.</param>
     Task DeleteAsync(int id, CancellationToken ct = default);
 
+    /// <summary>
+    /// Асинхронно получает список всех товаров c категориями и единицами измерения.
+    /// </summary>
+    /// <param name="ct">Токен отмены операции.</param>
     Task<List<Product>> GetAllWithDetailsAsync(CancellationToken ct = default);
 }

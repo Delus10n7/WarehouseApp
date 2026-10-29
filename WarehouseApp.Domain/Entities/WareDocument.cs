@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using WarehouseApp.Domain.Entities.Enums;
-
-namespace WarehouseApp.Domain.Entities;
+﻿namespace WarehouseApp.Domain.Entities;
 
 /// <summary>
 /// Представляет складской документ (приходную или расходную накладную).

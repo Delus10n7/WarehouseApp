@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WarehouseApp.Domain.Entities.Enums;
+﻿namespace WarehouseApp.Domain.Entities.Enums;
 
 /// <summary>
 /// Определяет временной период для формирования отчета.

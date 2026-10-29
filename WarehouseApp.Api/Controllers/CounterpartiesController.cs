@@ -40,13 +40,13 @@ public class CounterpartiesController : ControllerBase
     /// </summary>
     /// <param name="counterparty">Объект контрагента, передаваемый в теле запроса (JSON).</param>
     /// <returns>Результат выполнения операции.</returns>
-    /// <response code="200">Контрагент успешно создан.</response>
+    /// <response code="201">Контрагент успешно создан.</response>
     /// <response code="400">Переданы некорректные данные.</response>
     [HttpPost]
     public async Task<ActionResult> Create([FromBody] Counterparty counterparty)
     {
         await _repository.AddAsync(counterparty);
-        return Ok();
+        return Created();
     }
 
     /// <summary>

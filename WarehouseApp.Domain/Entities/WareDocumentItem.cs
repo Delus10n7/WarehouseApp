@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Text;
-
-namespace WarehouseApp.Domain.Entities;
+﻿namespace WarehouseApp.Domain.Entities;
 
 /// <summary>
 /// Представляет одну строку (позицию) в складском документе.
