@@ -4,46 +4,54 @@ using WarehouseApp.Maui.ViewModels.Products;
 namespace WarehouseApp.Tests.ViewModels;
 
 /// <summary>
-/// Тесты для <see cref="LookupPopupViewModel"/>. 
-/// Проверяют логику сохранения и закрытия.
+/// Unit-тесты <see cref="LookupPopupViewModel"/>.
 /// </summary>
 public class LookupPopupViewModelTests
 {
+    /// <summary>
+    /// Конструктор копирует параметры в свойства.
+    /// </summary>
     [Fact]
-    public async Task SaveAsync_Should_Call_OnSave_And_CloseAction_When_Name_Is_Valid()
+    public void Ctor_Copies_Parameters_To_Properties()
     {
-        // Arrange
         var vm = new LookupPopupViewModel("Заголовок", "Плейсхолдер", "Кнопка");
-        vm.Name = "Новая сущность";
 
-        bool saveCalled = false;
-        bool closeCalled = false;
-
-        vm.OnSave = (name) => { saveCalled = true; return Task.CompletedTask; };
-        vm.CloseAction = () => { closeCalled = true; return Task.CompletedTask; };
-
-        // Act
-        await vm.SaveCommand.ExecuteAsync(null);
-
-        // Assert
-        saveCalled.Should().BeTrue();
-        closeCalled.Should().BeTrue();
+        vm.Title.Should().Be("Заголовок");
+        vm.Placeholder.Should().Be("Плейсхолдер");
+        vm.ButtonText.Should().Be("Кнопка");
     }
 
+    /// <summary>SaveAsync при пустом имени не вызывает ни OnSave, ни CloseAction.</summary>
     [Fact]
-    public async Task SaveAsync_Should_Not_Save_When_Name_Is_Empty()
+    public async Task Save_With_Empty_Name_Does_Nothing()
     {
-        // Arrange
-        var vm = new LookupPopupViewModel("Заголовок", "Плейсхолдер", "Кнопка");
-        vm.Name = "";
+        var vm = new LookupPopupViewModel("t", "p", "b") { Name = "   " };
 
-        bool saveCalled = false;
-        vm.OnSave = (name) => { saveCalled = true; return Task.CompletedTask; };
+        var onSaveCalled = false;
+        var closeCalled = false;
+        vm.OnSave = _ => { onSaveCalled = true; return Task.CompletedTask; };
+        vm.CloseAction = () => { closeCalled = true; return Task.CompletedTask; };
 
-        // Act
         await vm.SaveCommand.ExecuteAsync(null);
 
-        // Assert
-        saveCalled.Should().BeFalse();
+        onSaveCalled.Should().BeFalse();
+        closeCalled.Should().BeFalse();
+    }
+
+    /// <summary>SaveAsync с валидным именем вызывает OnSave и CloseAction, имя обрезается.</summary>
+    [Fact]
+    public async Task Save_With_Valid_Name_Calls_OnSave_And_CloseAction()
+    {
+        var vm = new LookupPopupViewModel("t", "p", "b") { Name = "  Категория  " };
+
+        string? savedName = null;
+        var closeCalled = false;
+        vm.OnSave = name => { savedName = name; return Task.CompletedTask; };
+        vm.CloseAction = () => { closeCalled = true; return Task.CompletedTask; };
+
+        await vm.SaveCommand.ExecuteAsync(null);
+
+        savedName.Should().Be("Категория");      // Trim
+        closeCalled.Should().BeTrue();
     }
 }

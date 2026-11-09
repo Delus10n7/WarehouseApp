@@ -1,91 +1,131 @@
 ﻿using CommunityToolkit.Maui;
 using FluentAssertions;
 using NSubstitute;
-using WarehouseApp.Domain.Entities;
-using WarehouseApp.Application.Services;
+using WarehouseApp.Application.Dtos.CounterpartyDtos;
+using WarehouseApp.Infrastructure.Client.Generated;
 using WarehouseApp.Maui.ViewModels.Counterparties;
 
 namespace WarehouseApp.Tests.ViewModels;
 
 /// <summary>
-/// Тесты для <see cref="CounterpartyFormViewModel"/>. 
-/// Проверяют валидацию полей, логику создания и обновления контрагента.
+/// Unit-тесты <see cref="CounterpartyFormViewModel"/>.
 /// </summary>
 public class CounterpartyFormViewModelTests
 {
     private readonly IPopupService _popupServiceMock;
-    private readonly ICounterpartyApiService _apiServiceMock;
+    private readonly ICounterpartiesClient _clientMock;
 
-    /// <summary>
-    /// Инициализирует тестовый класс, создавая заглушки для сервисов попапов и API.
-    /// </summary>
+    /// <summary>Инициализирует моки.</summary>
     public CounterpartyFormViewModelTests()
     {
         _popupServiceMock = Substitute.For<IPopupService>();
-        _apiServiceMock = Substitute.For<ICounterpartyApiService>();
+        _clientMock = Substitute.For<ICounterpartiesClient>();
     }
 
-    /// <summary>
-    /// Проверяет, что при пустом имени устанавливается флаг ошибки и API не вызывается.
-    /// </summary>
+    /// <summary>Конструктор создания: IsEditMode = false, заголовок «Создать контрагента».</summary>
     [Fact]
-    public async Task SaveAsync_Should_Set_Error_When_Name_Is_Empty()
+    public void Ctor_Create_Sets_IsEditMode_False()
     {
-        // Arrange
-        var vm = new CounterpartyFormViewModel(_popupServiceMock, _apiServiceMock);
-        vm.Name = ""; // Оставляем имя пустым
+        var vm = new CounterpartyFormViewModel(_popupServiceMock, _clientMock);
 
-        // Act
+        vm.IsEditMode.Should().BeFalse();
+        vm.Title.Should().Be("Создать контрагента");
+        vm.ButtonText.Should().Be("Добавить контрагента");
+    }
+
+    /// <summary>Конструктор редактирования: IsEditMode = true и поля заполнены из DTO.</summary>
+    [Fact]
+    public void Ctor_Edit_Populates_Fields()
+    {
+        var existing = new CounterpartyDto
+        {
+            Id = 1,
+            Name = "Ромашка",
+            Phone = "+7",
+            Email = "a@b.c"
+        };
+
+        var vm = new CounterpartyFormViewModel(_popupServiceMock, _clientMock, existing);
+
+        vm.IsEditMode.Should().BeTrue();
+        vm.Name.Should().Be("Ромашка");
+        vm.Phone.Should().Be("+7");
+        vm.Email.Should().Be("a@b.c");
+    }
+
+    /// <summary>Пустое Name — SetError, API не вызывается.</summary>
+    [Fact]
+    public async Task Save_With_Empty_Name_Sets_Error_And_Does_Not_Call_Api()
+    {
+        var vm = new CounterpartyFormViewModel(_popupServiceMock, _clientMock) { Name = "" };
+
         await vm.SaveCommand.ExecuteAsync(null);
 
-        // Assert
         vm.HasError.Should().BeTrue();
         vm.ErrorMessage.Should().Contain("обязательно");
-
-        // Проверяем, что запрос к API НЕ отправлялся
-        await _apiServiceMock.DidNotReceive().AddAsync(Arg.Any<Counterparty>());
+        await _clientMock.DidNotReceive()
+            .CreateAsync(Arg.Any<CounterpartyRequestDto>());
     }
 
-    /// <summary>
-    /// Проверяет, что при создании нового контрагента вызывается метод AddAsync API-сервиса.
-    /// </summary>
+    /// <summary>Успешное создание: вызывается CreateAsync с правильным DTO.</summary>
     [Fact]
-    public async Task SaveAsync_Should_Call_AddAsync_On_Create()
+    public async Task Save_Create_Calls_CreateAsync()
     {
-        // Arrange
-        var vm = new CounterpartyFormViewModel(_popupServiceMock, _apiServiceMock);
-        vm.Name = "Новый Контрагент";
-        vm.Phone = "+79990000000";
+        // Мокаем перегрузку БЕЗ CancellationToken — её вызывает VM
+        _clientMock.CreateAsync(Arg.Any<CounterpartyRequestDto>())
+            .Returns(Task.FromResult(new CounterpartyDto { Id = 1 }));
 
-        // Act
+        var vm = new CounterpartyFormViewModel(_popupServiceMock, _clientMock)
+        {
+            Name = "  Новый  ",
+            Phone = "   ",
+            Email = "  mail@test  "
+        };
+
         await vm.SaveCommand.ExecuteAsync(null);
 
-        // Assert
-        vm.HasError.Should().BeFalse();
-        // Проверяем, что API был вызван ровно 1 раз с правильным именем
-        await _apiServiceMock.Received(1).AddAsync(
-            Arg.Is<Counterparty>(c => c.Name == "Новый Контрагент"),
-            Arg.Any<CancellationToken>());
+        await _clientMock.Received(1).CreateAsync(
+            Arg.Is<CounterpartyRequestDto>(d =>
+                d.Name == "Новый" &&
+                d.Phone == null &&
+                d.Email == "mail@test"));
     }
 
-    /// <summary>
-    /// Проверяет, что при редактировании существующего контрагента вызывается метод UpdateAsync API-сервиса.
-    /// </summary>
+    /// <summary>Успешное редактирование: вызывается UpdateAsync с id и DTO.</summary>
     [Fact]
-    public async Task SaveAsync_Should_Call_UpdateAsync_On_Edit()
+    public async Task Save_Edit_Calls_UpdateAsync()
     {
-        // Arrange
-        var existing = new Counterparty { Id = 1, Name = "Старое Имя" };
-        var vm = new CounterpartyFormViewModel(_popupServiceMock, _apiServiceMock, existing);
+        // Мокаем перегрузку UpdateAsync(id, dto) без CancellationToken
+        _clientMock.UpdateAsync(Arg.Any<int>(), Arg.Any<CounterpartyRequestDto>())
+            .Returns(Task.CompletedTask);
 
-        vm.Name = "Новое Имя";
+        var existing = new CounterpartyDto { Id = 42, Name = "Старое" };
+        var vm = new CounterpartyFormViewModel(_popupServiceMock, _clientMock, existing)
+        {
+            Name = "Новое"
+        };
 
-        // Act
         await vm.SaveCommand.ExecuteAsync(null);
 
-        // Assert
-        await _apiServiceMock.Received(1).UpdateAsync(
-            Arg.Is<Counterparty>(c => c.Id == 1 && c.Name == "Новое Имя"),
-            Arg.Any<CancellationToken>());
+        await _clientMock.Received(1).UpdateAsync(
+            42,
+            Arg.Is<CounterpartyRequestDto>(d => d.Name == "Новое"));
+    }
+
+    /// <summary>Ошибка API ловится и записывается в ErrorMessage.</summary>
+    [Fact]
+    public async Task Save_On_Api_Error_Sets_ErrorMessage()
+    {
+        // Мокаем БЕСПАРАМЕТРИЧЕСКУЮ перегрузку
+        _clientMock.CreateAsync(Arg.Any<CounterpartyRequestDto>())
+            .Returns(Task.FromException<CounterpartyDto>(
+                new InvalidOperationException("server down")));
+
+        var vm = new CounterpartyFormViewModel(_popupServiceMock, _clientMock) { Name = "Тест" };
+
+        await vm.SaveCommand.ExecuteAsync(null);
+
+        vm.HasError.Should().BeTrue();
+        vm.ErrorMessage.Should().Contain("server down");
     }
 }

@@ -1,62 +1,60 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
-using WarehouseApp.Domain.Entities;
-using WarehouseApp.Application.Services;
+using WarehouseApp.Application.Dtos.CounterpartyDtos;
+using WarehouseApp.Infrastructure.Client.Generated;
 using WarehouseApp.Maui.ViewModels.Counterparties;
 
 namespace WarehouseApp.Tests.ViewModels;
 
 /// <summary>
-/// Тесты для <see cref="CounterpartiesViewModel"/>. 
-/// Проверяют логику загрузки данных, обработку ошибок и фильтрацию списка.
+/// Unit-тесты <see cref="CounterpartiesViewModel"/>.
 /// </summary>
 public class CounterpartiesViewModelTests
 {
-    private readonly ICounterpartyApiService _apiServiceMock;
+    private readonly ICounterpartiesClient _clientMock;
+    private readonly ILogger<CounterpartiesViewModel> _loggerMock;
 
-    /// <summary>
-    /// Инициализирует тестовый класс, создавая заглушку (мок) для API-сервиса.
-    /// </summary>
+    /// <summary>Инициализирует моки.</summary>
     public CounterpartiesViewModelTests()
     {
-        _apiServiceMock = Substitute.For<ICounterpartyApiService>();
+        _clientMock = Substitute.For<ICounterpartiesClient>();
+        _loggerMock = Substitute.For<ILogger<CounterpartiesViewModel>>();
     }
 
-    /// <summary>
-    /// Проверяет, что при успешной загрузке данных коллекция заполняется контрагентами.
-    /// </summary>
+    /// <summary>LoadDataAsync заполняет Counterparties и снимает IsRefreshing.</summary>
     [Fact]
-    public async Task LoadDataAsync_Should_Populate_Collection_On_Success()
+    public async Task LoadDataAsync_Populates_Collection_On_Success()
     {
-        // Arrange (Подготовка)
-        var fakeData = new List<Counterparty>
+        // Arrange — мокаем БЕСПАРАМЕТРИЧЕСКУЮ перегрузку (её вызывает VM)
+        var fake = new List<CounterpartyDto>
         {
-            new() { Name = "ООО Ромашка" },
-            new() { Name = "ИП Иванов" }
+            new() { Id = 1, Name = "Ромашка" },
+            new() { Id = 2, Name = "Иванов" }
         };
-        _apiServiceMock.GetAllAsync(Arg.Any<CancellationToken>()).Returns(fakeData);
+        _clientMock.GetAllAsync()
+            .Returns(Task.FromResult<ICollection<CounterpartyDto>>(fake));
 
-        var vm = new CounterpartiesViewModel(_apiServiceMock);
+        var vm = new CounterpartiesViewModel(_clientMock, _loggerMock);
 
-        // Act (Действие)
+        // Act
         await vm.LoadDataAsync();
 
-        // Assert (Проверка)
+        // Assert
         vm.Counterparties.Should().HaveCount(2);
         vm.IsRefreshing.Should().BeFalse();
     }
 
-    /// <summary>
-    /// Проверяет, что при возникновении исключения в API, коллекция очищается, а индикатор загрузки отключается.
-    /// </summary>
+    /// <summary>LoadDataAsync при исключении очищает коллекцию и снимает IsRefreshing.</summary>
     [Fact]
-    public async Task LoadDataAsync_Should_Clear_Collection_On_Exception()
+    public async Task LoadDataAsync_Clears_Collection_On_Error()
     {
         // Arrange
-        _apiServiceMock.GetAllAsync(Arg.Any<CancellationToken>())
-            .Returns(Task.FromException<List<Counterparty>>(new Exception("Ошибка сети")));
+        _clientMock.GetAllAsync()
+            .Returns(Task.FromException<ICollection<CounterpartyDto>>(
+                new HttpRequestException("network error")));
 
-        var vm = new CounterpartiesViewModel(_apiServiceMock);
+        var vm = new CounterpartiesViewModel(_clientMock, _loggerMock);
 
         // Act
         await vm.LoadDataAsync();
@@ -66,28 +64,40 @@ public class CounterpartiesViewModelTests
         vm.IsRefreshing.Should().BeFalse();
     }
 
-    /// <summary>
-    /// Проверяет, что при вводе текста в поисковую строку список контрагентов корректно фильтруется.
-    /// </summary>
+    /// <summary>Изменение SearchText фильтрует коллекцию по имени.</summary>
     [Fact]
-    public async Task OnSearchTextChanged_Should_Filter_Collection()
+    public async Task OnSearchTextChanged_Filters_Collection()
     {
         // Arrange
-        var fakeData = new List<Counterparty>
-        {
-            new() { Name = "ООО Ромашка" },
-            new() { Name = "ИП Иванов" }
-        };
-        _apiServiceMock.GetAllAsync(Arg.Any<CancellationToken>()).Returns(fakeData);
+        _clientMock.GetAllAsync()
+            .Returns(Task.FromResult<ICollection<CounterpartyDto>>(new List<CounterpartyDto>
+            {
+                new() { Name = "ООО Ромашка" },
+                new() { Name = "ИП Иванов" }
+            }));
 
-        var vm = new CounterpartiesViewModel(_apiServiceMock);
-        await vm.LoadDataAsync(); // Загружаем данные в коллекцию
+        var vm = new CounterpartiesViewModel(_clientMock, _loggerMock);
+        await vm.LoadDataAsync();
 
         // Act
-        vm.SearchText = "Ромаш"; // Имитируем ввод в поле поиска
+        vm.SearchText = "Ромаш";
 
         // Assert
         vm.Counterparties.Should().HaveCount(1);
-        vm.Counterparties.First().Name.Should().Be("ООО Ромашка");
+        vm.Counterparties[0].Name.Should().Be("ООО Ромашка");
+    }
+
+    /// <summary>Edit поднимает событие EditRequested с переданным DTO.</summary>
+    [Fact]
+    public async Task Edit_Raises_EditRequested_With_Dto()
+    {
+        var vm = new CounterpartiesViewModel(_clientMock, _loggerMock);
+        var captured = new List<CounterpartyDto>();
+        vm.EditRequested += dto => { captured.Add(dto); return Task.CompletedTask; };
+
+        var counterparty = new CounterpartyDto { Id = 42, Name = "Тест" };
+        await vm.EditCommand.ExecuteAsync(counterparty);
+
+        captured.Should().ContainSingle().Which.Should().BeSameAs(counterparty);
     }
 }
