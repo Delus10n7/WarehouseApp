@@ -31,6 +31,7 @@ public class CounterpartiesController : ControllerBase
     /// <returns>Коллекция объектов <see cref="CounterpartyDto"/>.</returns>
     /// <response code="200">Успешно возвращает список контрагентов (может быть пустым).</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<CounterpartyDto>>> GetAll(CancellationToken ct)
     {
         var entities = await _repository.GetAllAsync(ct);
@@ -47,6 +48,8 @@ public class CounterpartiesController : ControllerBase
     /// <response code="200">Успешно возвращает контрагента.</response>
     /// <response code="404">Контрагент с указанным идентификатором не найден.</response>
     [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<CounterpartyDto>> GetById(int id, CancellationToken ct)
     {
         var entity = await _repository.GetByIdAsync(id, ct);
@@ -63,6 +66,8 @@ public class CounterpartiesController : ControllerBase
     /// <response code="201">Контрагент успешно создан. Заголовок Location содержит ссылку на GetById.</response>
     /// <response code="400">Поле 'Name' обязательно и не может быть пустым.</response>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<CounterpartyDto>> Create(
         [FromBody] CounterpartyRequestDto dto, CancellationToken ct)
     {
@@ -84,6 +89,8 @@ public class CounterpartiesController : ControllerBase
     /// <response code="204">Данные успешно обновлены (нет тела ответа).</response>
     /// <response code="404">Контрагент с указанным идентификатором не найден.</response>
     [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         int id, [FromBody] CounterpartyRequestDto dto, CancellationToken ct)
     {
@@ -104,6 +111,8 @@ public class CounterpartiesController : ControllerBase
     /// <response code="204">Данные успешно удалены (нет тела ответа).</response>
     /// <response code="404">Контрагент с указанным идентификатором не найден.</response>
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var deleted = await _repository.DeleteAsync(id, ct);

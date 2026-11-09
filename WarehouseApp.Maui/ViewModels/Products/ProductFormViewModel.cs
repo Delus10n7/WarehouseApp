@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using WarehouseApp.Application.Dtos.CategoryDtos;
 using WarehouseApp.Application.Dtos.ProductDtos;
 using WarehouseApp.Application.Dtos.UnitOfMeasureDtos;
-using WarehouseApp.Application.Services;
+using WarehouseApp.Infrastructure.Client.Generated;
 
 namespace WarehouseApp.Maui.ViewModels.Products;
 
@@ -15,8 +15,8 @@ namespace WarehouseApp.Maui.ViewModels.Products;
 public partial class ProductFormViewModel : ObservableObject
 {
     private readonly IPopupService _popupService;
-    private readonly IProductApiService _productService;
-    private readonly ILookupApiService _lookupService;
+    private readonly IProductsClient _productsClient;
+    private readonly ILookupsClient _lookupsClient;
     private readonly ProductDto? _entityToUpdate;
 
     [ObservableProperty] private string title = string.Empty;
@@ -40,41 +40,34 @@ public partial class ProductFormViewModel : ObservableObject
     /// </summary>
     public Func<LookupPopupViewModel, Task>? ShowLookupPopupRequested { get; set; }
 
-    /// <summary>Режим редактирования (в отличие от создания).</summary>
     public bool IsEditMode => _entityToUpdate != null;
-
-    /// <summary>Есть ли сообщение об ошибке для отображения в UI.</summary>
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    /// <summary>
-    /// Конструктор для создания нового товара.
-    /// </summary>
+    /// <summary>Конструктор для создания нового товара.</summary>
     public ProductFormViewModel(
         IPopupService popupService,
-        IProductApiService productService,
-        ILookupApiService lookupService)
+        IProductsClient productsClient,
+        ILookupsClient lookupsClient)
     {
         _popupService = popupService;
-        _productService = productService;
-        _lookupService = lookupService;
+        _productsClient = productsClient;
+        _lookupsClient = lookupsClient;
 
         Title = "Создание товара";
         ButtonText = "Добавить товар";
         ButtonColor = Color.FromArgb("#4CAF50");
     }
 
-    /// <summary>
-    /// Конструктор для редактирования существующего товара.
-    /// </summary>
+    /// <summary>Конструктор для редактирования существующего товара.</summary>
     public ProductFormViewModel(
         IPopupService popupService,
-        IProductApiService productService,
-        ILookupApiService lookupService,
+        IProductsClient productsClient,
+        ILookupsClient lookupsClient,
         ProductDto existing)
     {
         _popupService = popupService;
-        _productService = productService;
-        _lookupService = lookupService;
+        _productsClient = productsClient;
+        _lookupsClient = lookupsClient;
         _entityToUpdate = existing;
 
         Title = "Изменение товара";
@@ -87,14 +80,14 @@ public partial class ProductFormViewModel : ObservableObject
 
     /// <summary>
     /// Асинхронная инициализация: загрузка категорий и единиц, восстановление
-    /// выбранных значений при редактировании.
+    /// выбранных значений при редактировании. Вызывается из code-behind ДО показа попапа.
     /// </summary>
     public async Task InitializeAsync()
     {
         try
         {
-            var catsTask = _lookupService.GetCategoriesAsync();
-            var unitsTask = _lookupService.GetUnitsAsync();
+            var catsTask = _lookupsClient.GetCategoriesAsync();
+            var unitsTask = _lookupsClient.GetUnitsAsync();
             await Task.WhenAll(catsTask, unitsTask);
 
             var cats = await catsTask;
@@ -155,9 +148,9 @@ public partial class ProductFormViewModel : ObservableObject
             };
 
             if (IsEditMode && _entityToUpdate != null)
-                await _productService.UpdateAsync(_entityToUpdate.Id, dto);
+                await _productsClient.UpdateAsync(_entityToUpdate.Id, dto);
             else
-                await _productService.AddAsync(dto);
+                await _productsClient.CreateAsync(dto);
 
             if (Shell.Current != null)
                 await _popupService.ClosePopupAsync(Shell.Current.Navigation);
@@ -170,9 +163,7 @@ public partial class ProductFormViewModel : ObservableObject
 
     partial void OnErrorMessageChanged(string value) => OnPropertyChanged(nameof(HasError));
 
-    /// <summary>
-    /// Открывает диалог создания новой категории и добавляет её в список.
-    /// </summary>
+    /// <summary>Открывает диалог создания новой категории и добавляет её в список.</summary>
     [RelayCommand]
     private async Task AddNewCategoryAsync()
     {
@@ -183,7 +174,7 @@ public partial class ProductFormViewModel : ObservableObject
 
         vm.OnSave = async (name) =>
         {
-            var created = await _lookupService.AddCategoryAsync(new CategoryCreateDto { Name = name });
+            var created = await _lookupsClient.CreateCategoryAsync(new CategoryCreateDto { Name = name });
             Categories.Add(created);
             SelectedCategory = created;
         };
@@ -192,9 +183,7 @@ public partial class ProductFormViewModel : ObservableObject
             await ShowLookupPopupRequested(vm);
     }
 
-    /// <summary>
-    /// Открывает диалог создания новой единицы измерения и добавляет её в список.
-    /// </summary>
+    /// <summary>Открывает диалог создания новой единицы измерения и добавляет её в список.</summary>
     [RelayCommand]
     private async Task AddNewUnitAsync()
     {
@@ -205,7 +194,7 @@ public partial class ProductFormViewModel : ObservableObject
 
         vm.OnSave = async (name) =>
         {
-            var created = await _lookupService.AddUnitAsync(new UnitOfMeasureCreateDto { Name = name });
+            var created = await _lookupsClient.CreateUnitAsync(new UnitOfMeasureCreateDto { Name = name });
             Units.Add(created);
             SelectedUnit = created;
         };

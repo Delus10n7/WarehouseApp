@@ -1,8 +1,8 @@
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Extensions;
 using WarehouseApp.Application.Dtos.ProductDtos;
-using WarehouseApp.Application.Services;
 using WarehouseApp.Maui.ViewModels.Products;
+using WarehouseApp.Infrastructure.Client.Generated;
 
 namespace WarehouseApp.Maui.Views.Products;
 
@@ -12,8 +12,8 @@ namespace WarehouseApp.Maui.Views.Products;
 public partial class ProductsPage : ContentPage
 {
     private readonly IPopupService _popupService;
-    private readonly IProductApiService _productService;
-    private readonly ILookupApiService _lookupService;
+    private readonly IProductsClient _productsClient;
+    private readonly ILookupsClient _lookupsClient;
     private readonly ProductsViewModel _viewModel;
 
     /// <summary>
@@ -21,14 +21,14 @@ public partial class ProductsPage : ContentPage
     /// </summary>
     public ProductsPage(
         IPopupService popupService,
-        IProductApiService productService,
-        ILookupApiService lookupService,
+        IProductsClient productsClient,
+        ILookupsClient lookupsClient,
         ProductsViewModel viewModel)
     {
         InitializeComponent();
         _popupService = popupService;
-        _productService = productService;
-        _lookupService = lookupService;
+        _productsClient = productsClient;
+        _lookupsClient = lookupsClient;
         _viewModel = viewModel;
 
         _viewModel.OpenProductFormRequested += OnOpenProductFormRequested;
@@ -74,8 +74,8 @@ public partial class ProductsPage : ContentPage
     private async Task OpenProductFormAsync(ProductDto? product)
     {
         var formVm = product is null
-            ? new ProductFormViewModel(_popupService, _productService, _lookupService)
-            : new ProductFormViewModel(_popupService, _productService, _lookupService, product);
+            ? new ProductFormViewModel(_popupService, _productsClient, _lookupsClient)
+            : new ProductFormViewModel(_popupService, _productsClient, _lookupsClient, product);
 
         // Callback: форма запрашивает открытие вложенного попапа справочника.
         formVm.ShowLookupPopupRequested = async (lookupVm) =>

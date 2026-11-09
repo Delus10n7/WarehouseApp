@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using WarehouseApp.Application.Dtos.CounterpartyDtos;
-using WarehouseApp.Application.Services;
+using WarehouseApp.Infrastructure.Client.Generated;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties;
 
@@ -12,15 +12,12 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties;
 /// </summary>
 public partial class CounterpartiesViewModel : ObservableObject
 {
-    private readonly ICounterpartyApiService _apiService;
+    private readonly ICounterpartiesClient _counterpartiesClient;
     private readonly ILogger<CounterpartiesViewModel> _logger;
 
     private List<CounterpartyDto> _allCounterparties = new();
 
-    /// <summary>Флаг «идёт обновление» (для RefreshView).</summary>
     [ObservableProperty] private bool isRefreshing;
-
-    /// <summary>Текст поиска по имени.</summary>
     [ObservableProperty] private string searchText = string.Empty;
 
     /// <summary>Отфильтрованный список контрагентов, привязанный к UI.</summary>
@@ -29,14 +26,11 @@ public partial class CounterpartiesViewModel : ObservableObject
     /// <summary>Событие: пользователь нажал на карточку — нужно открыть форму редактирования.</summary>
     public event Func<CounterpartyDto, Task>? EditRequested;
 
-    /// <summary>
-    /// Инициализирует новый экземпляр <see cref="CounterpartiesViewModel"/>.
-    /// </summary>
     public CounterpartiesViewModel(
-        ICounterpartyApiService apiService,
+        ICounterpartiesClient counterpartiesClient,
         ILogger<CounterpartiesViewModel> logger)
     {
-        _apiService = apiService;
+        _counterpartiesClient = counterpartiesClient;
         _logger = logger;
     }
 
@@ -49,7 +43,8 @@ public partial class CounterpartiesViewModel : ObservableObject
         IsRefreshing = true;
         try
         {
-            _allCounterparties = await _apiService.GetAllAsync();
+            // GetAllAsync возвращает ICollection<T>, приводим к List
+            _allCounterparties = (await _counterpartiesClient.GetAllAsync()).ToList();
             ApplyFilter();
         }
         catch (Exception ex)

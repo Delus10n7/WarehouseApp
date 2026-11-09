@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using WarehouseApp.Application.Dtos.CategoryDtos;
 using WarehouseApp.Application.Dtos.ProductDtos;
-using WarehouseApp.Application.Services;
+using WarehouseApp.Infrastructure.Client.Generated;
 
 namespace WarehouseApp.Maui.ViewModels.Products;
 
@@ -17,26 +17,17 @@ public partial class ProductsViewModel : ObservableObject
     private const string StockFilterInStock = "В наличии";
     private const string StockFilterOutOfStock = "Нет в наличии";
 
-    private readonly IProductApiService _productService;
-    private readonly ILookupApiService _lookupService;
+    private readonly IProductsClient _productsClient;
+    private readonly ILookupsClient _lookupsClient;
     private readonly ILogger<ProductsViewModel> _logger;
 
     private List<ProductDto> _allProducts = new();
     private bool _isLoading;
 
-    /// <summary>Текст поиска (по названию или артикулу).</summary>
     [ObservableProperty] private string searchText = string.Empty;
-
-    /// <summary>Флаг «идёт обновление» (для RefreshView).</summary>
     [ObservableProperty] private bool isRefreshing;
-
-    /// <summary>Выбранная категория для фильтра.</summary>
     [ObservableProperty] private CategoryDto? selectedFilterCategory;
-
-    /// <summary>Выбранный фильтр по остатку (одна из констант StockFilter*).</summary>
     [ObservableProperty] private string? selectedStockFilter;
-
-    /// <summary>Флаг видимости панели фильтров.</summary>
     [ObservableProperty] private bool isFilterVisible;
 
     /// <summary>Категории для выпадающего списка фильтра.</summary>
@@ -57,16 +48,13 @@ public partial class ProductsViewModel : ObservableObject
     /// </summary>
     public event Func<ProductDto?, Task>? OpenProductFormRequested;
 
-    /// <summary>
-    /// Инициализирует новый экземпляр <see cref="ProductsViewModel"/>.
-    /// </summary>
     public ProductsViewModel(
-        IProductApiService productService,
-        ILookupApiService lookupService,
+        IProductsClient productsClient,
+        ILookupsClient lookupsClient,
         ILogger<ProductsViewModel> logger)
     {
-        _productService = productService;
-        _lookupService = lookupService;
+        _productsClient = productsClient;
+        _lookupsClient = lookupsClient;
         _logger = logger;
     }
 
@@ -82,11 +70,12 @@ public partial class ProductsViewModel : ObservableObject
 
         try
         {
-            var productsTask = _productService.GetAllAsync();
-            var categoriesTask = _lookupService.GetCategoriesAsync();
+            var productsTask = _productsClient.GetAllAsync();
+            var categoriesTask = _lookupsClient.GetCategoriesAsync();
             await Task.WhenAll(productsTask, categoriesTask);
 
-            _allProducts = await productsTask;
+            // GetAllAsync возвращает ICollection<T>, приводим к List
+            _allProducts = (await productsTask).ToList();
 
             var cats = await categoriesTask;
             AvailableCategories.Clear();
@@ -153,9 +142,8 @@ public partial class ProductsViewModel : ObservableObject
     }
 
     /// <summary>
-    /// Команда открытия формы товара.
+    /// Команда открытия формы товара. Параметр: <c>null</c> — создание, DTO — редактирование.
     /// </summary>
-    /// <param name="product"><c>null</c> — создание, DTO — редактирование.</param>
     [RelayCommand]
     private async Task Edit(ProductDto? product)
     {

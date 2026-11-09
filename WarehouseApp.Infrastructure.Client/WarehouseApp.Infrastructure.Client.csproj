@@ -8,10 +8,31 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.13" />
+    <PackageReference Include="NSwag.ApiDescription.Client" Version="14.7.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NSwag.MSBuild" Version="14.7.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\WarehouseApp.Application\WarehouseApp.Application.csproj" />
+  </ItemGroup>
+
+	<!-- Автоматическая генерация клиента перед сборкой -->
+	<Target Name="NSwagGenerateClient" BeforeTargets="BeforeBuild">
+		<!-- 1. Скачиваем актуальный swagger.json с запущенного API -->
+		<DownloadFile SourceUrl="http://localhost:5273/swagger/v1/swagger.json" DestinationFolder="$(MSBuildProjectDirectory)\OpenAPIs" />
+
+		<!-- 2. Запускаем генерацию через бинарник Net80 (соответствует nswag.json) -->
+		<Exec Command="$(NSwagExe_Net80) run nswag.json" WorkingDirectory="$(MSBuildProjectDirectory)" />
+	</Target>
+	
+  <ItemGroup>
+    <Folder Include="OpenAPIs\" />
   </ItemGroup>
 
 </Project>

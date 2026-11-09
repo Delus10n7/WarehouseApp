@@ -55,7 +55,7 @@ public static class MauiProgram
         string apiBaseUrl = "http://localhost:5273/";
 #endif
 
-        // Регистрирует типизированные HttpClient'ы для клиентских API-сервисов.
+        // Регистрирует HttpClient'ы для клиентских API-сервисов.
         builder.Services.AddApiServices(apiBaseUrl);
 
         // ViewModel'и страниц — Transient (новый экземпляр на каждый переход).

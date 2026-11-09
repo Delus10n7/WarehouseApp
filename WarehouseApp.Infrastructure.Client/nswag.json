@@ -1,0 +1,30 @@
+{
+  "runtime": "Net80",
+  "defaultVariables": null,
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "OpenAPIs/swagger.json",
+      "output": null
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "namespace": "WarehouseApp.Infrastructure.Client.Generated",
+      "generateClientInterfaces": true,
+      "injectHttpClient": true,
+      "useBaseUrl": false,
+      "className": "{controller}Client",
+      "generateDtoTypes": false,
+      "additionalNamespaceUsages": [
+        "WarehouseApp.Application.Dtos.CategoryDtos",
+        "WarehouseApp.Application.Dtos.CommonDtos",
+        "WarehouseApp.Application.Dtos.CounterpartyDtos",
+        "WarehouseApp.Application.Dtos.ProductDtos",
+        "WarehouseApp.Application.Dtos.UnitOfMeasureDtos",
+        "WarehouseApp.Application.Dtos.WareDocumentDtos"
+      ],
+      "output": "Generated/ApiClient.cs",
+      "jsonLibrary": "SystemTextJson"
+    }
+  }
+}

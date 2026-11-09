@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using WarehouseApp.Application.Dtos.CounterpartyDtos;
-using WarehouseApp.Application.Services;
+using WarehouseApp.Infrastructure.Client.Generated;
 
 namespace WarehouseApp.Maui.ViewModels.Counterparties;
 
@@ -12,7 +12,7 @@ namespace WarehouseApp.Maui.ViewModels.Counterparties;
 public partial class CounterpartyFormViewModel : ObservableObject
 {
     private readonly IPopupService _popupService;
-    private readonly ICounterpartyApiService _apiService;
+    private readonly ICounterpartiesClient _counterpartiesClient;
     private readonly CounterpartyDto? _entityToUpdate;
 
     [ObservableProperty] private string title = string.Empty;
@@ -23,37 +23,30 @@ public partial class CounterpartyFormViewModel : ObservableObject
     [ObservableProperty] private string email = string.Empty;
     [ObservableProperty] private string errorMessage = string.Empty;
 
-    /// <summary>Режим редактирования (в отличие от создания).</summary>
     public bool IsEditMode => _entityToUpdate != null;
-
-    /// <summary>Есть ли сообщение об ошибке.</summary>
     public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
 
-    /// <summary>
-    /// Конструктор для создания нового контрагента.
-    /// </summary>
+    /// <summary>Конструктор для создания нового контрагента.</summary>
     public CounterpartyFormViewModel(
         IPopupService popupService,
-        ICounterpartyApiService apiService)
+        ICounterpartiesClient counterpartiesClient)
     {
         _popupService = popupService;
-        _apiService = apiService;
+        _counterpartiesClient = counterpartiesClient;
 
         Title = "Создать контрагента";
         ButtonText = "Добавить контрагента";
         ButtonColor = Color.FromArgb("#4CAF50");
     }
 
-    /// <summary>
-    /// Конструктор для редактирования существующего контрагента.
-    /// </summary>
+    /// <summary>Конструктор для редактирования существующего контрагента.</summary>
     public CounterpartyFormViewModel(
         IPopupService popupService,
-        ICounterpartyApiService apiService,
+        ICounterpartiesClient counterpartiesClient,
         CounterpartyDto existing)
     {
         _popupService = popupService;
-        _apiService = apiService;
+        _counterpartiesClient = counterpartiesClient;
         _entityToUpdate = existing;
 
         Title = "Контрагент";
@@ -89,9 +82,9 @@ public partial class CounterpartyFormViewModel : ObservableObject
             };
 
             if (IsEditMode && _entityToUpdate != null)
-                await _apiService.UpdateAsync(_entityToUpdate.Id, dto);
+                await _counterpartiesClient.UpdateAsync(_entityToUpdate.Id, dto);
             else
-                await _apiService.AddAsync(dto);
+                await _counterpartiesClient.CreateAsync(dto);
 
             if (Shell.Current != null)
                 await _popupService.ClosePopupAsync(Shell.Current.Navigation);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using WarehouseApp.Application.Services;
 using WarehouseApp.Infrastructure.Client.Services;
+using WarehouseApp.Infrastructure.Client.Generated;
 
 namespace WarehouseApp.Infrastructure.Client;
 
@@ -21,19 +22,19 @@ public static class DependencyInjection
         if (!apiBaseUrl.EndsWith('/'))
             apiBaseUrl += "/";
 
-        services.AddHttpClient<ICounterpartyApiService, CounterpartyApiService>(client =>
+        services.AddHttpClient<ICounterpartiesClient, CounterpartiesClient>(client =>
         {
             client.BaseAddress = new Uri(apiBaseUrl);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 
-        services.AddHttpClient<IProductApiService, ProductApiService>(client =>
+        services.AddHttpClient<IProductsClient, ProductsClient>(client =>
         {
             client.BaseAddress = new Uri(apiBaseUrl);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         });
 
-        services.AddHttpClient<ILookupApiService, LookupApiService>(client =>
+        services.AddHttpClient<ILookupsClient, LookupsClient>(client =>
         {
             client.BaseAddress = new Uri(apiBaseUrl);
             client.DefaultRequestHeaders.Add("Accept", "application/json");

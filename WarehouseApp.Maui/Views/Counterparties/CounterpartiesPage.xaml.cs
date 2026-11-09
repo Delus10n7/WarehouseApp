@@ -1,8 +1,8 @@
 using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Extensions;
 using WarehouseApp.Application.Dtos.CounterpartyDtos;
-using WarehouseApp.Application.Services;
 using WarehouseApp.Maui.ViewModels.Counterparties;
+using WarehouseApp.Infrastructure.Client.Generated;
 
 namespace WarehouseApp.Maui.Views.Counterparties;
 
@@ -12,23 +12,23 @@ namespace WarehouseApp.Maui.Views.Counterparties;
 public partial class CounterpartiesPage : ContentPage
 {
     private readonly IPopupService _popupService;
-    private readonly ICounterpartyApiService _apiService;
+    private readonly ICounterpartiesClient _counterpartiesClient;
     private readonly CounterpartiesViewModel _viewModel;
 
     /// <summary>
     /// Инициализирует новый экземпляр страницы. Все зависимости приходят через DI.
     /// </summary>
     /// <param name="popupService">Сервис показа модальных окон.</param>
-    /// <param name="apiService">Клиент API контрагентов (нужен для открытия формы).</param>
+    /// <param name="counterpartiesClient">Клиент API контрагентов (нужен для открытия формы).</param>
     /// <param name="viewModel">ViewModel страницы (регистрируется в DI).</param>
     public CounterpartiesPage(
         IPopupService popupService,
-        ICounterpartyApiService apiService,
+         ICounterpartiesClient counterpartiesClient,
         CounterpartiesViewModel viewModel)
     {
         InitializeComponent();
         _popupService = popupService;
-        _apiService = apiService;
+        _counterpartiesClient = counterpartiesClient;
         _viewModel = viewModel;
 
         _viewModel.EditRequested += OnEditRequested;
@@ -75,8 +75,8 @@ public partial class CounterpartiesPage : ContentPage
     private async Task OpenFormAsync(CounterpartyDto? existing)
     {
         var formVm = existing is null
-            ? new CounterpartyFormViewModel(_popupService, _apiService)
-            : new CounterpartyFormViewModel(_popupService, _apiService, existing);
+            ? new CounterpartyFormViewModel(_popupService, _counterpartiesClient)
+            : new CounterpartyFormViewModel(_popupService, _counterpartiesClient, existing);
 
         var popup = new CounterpartyPopup(formVm);
         await this.ShowPopupAsync(popup, new PopupOptions { Shape = null });

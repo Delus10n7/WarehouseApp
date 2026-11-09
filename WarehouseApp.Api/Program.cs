@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using WarehouseApp.Infrastructure;
+using NSwag.AspNetCore;
 
 // Создаем builder для настройки веб-приложения.
 // Через builder регистрируются сервисы (DI), конфигурация, логирование.
@@ -18,9 +19,13 @@ builder.Services.AddControllers()
 
 // Настраиваем генератор Swagger для документирования и ручного тестирования.
 // AddEndpointsApiExplorer — собирает метаданные об эндпоинтах.
-// AddSwaggerGen — генерирует OpenAPI-документ на их основе.
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApiDocument(config =>
+{
+    config.DocumentName = "v1";
+    config.Title = "WarehouseApp API";
+    config.Version = "v1";
+});
 
 // Получаем строку подключения из appsettings.json.
 // Если там пусто — используется резервная строка для локальной разработки (SQLEXPRESS).
@@ -74,11 +79,10 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
-// Swagger включаем ТОЛЬКО в Development — в production отдавать документацию API небезопасно.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi(); // Генерирует swagger.json
+    app.UseSwaggerUi(); // Отображает UI
 }
 
 // CORS-middleware должен идти ДО MapControllers, иначе политика не применится.

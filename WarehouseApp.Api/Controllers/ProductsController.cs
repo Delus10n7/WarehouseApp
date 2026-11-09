@@ -28,6 +28,7 @@ public class ProductsController : ControllerBase
     /// <returns>Коллекция объектов <see cref="ProductDto"/>.</returns>
     /// <response code="200">Успешно возвращает список товаров (может быть пустым).</response>
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll(CancellationToken ct)
     {
         var entities = await _repository.GetAllWithDetailsAsync(ct);
@@ -43,6 +44,8 @@ public class ProductsController : ControllerBase
     /// <response code="200">Успешно возвращает товар.</response>
     /// <response code="404">Товар с указанным идентификатором не найден.</response>
     [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductDto>> GetById(int id, CancellationToken ct)
     {
         var entity = await _repository.GetByIdAsync(id, ct);
@@ -59,6 +62,8 @@ public class ProductsController : ControllerBase
     /// <response code="201">Товар успешно создан. Заголовок Location содержит ссылку на GetById.</response>
     /// <response code="400">Поля 'Name' и 'Article' обязательны.</response>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ProductDto>> Create(
         [FromBody] ProductRequestDto dto, CancellationToken ct)
     {
@@ -83,6 +88,8 @@ public class ProductsController : ControllerBase
     /// <response code="204">Данные успешно обновлены (нет тела ответа).</response>
     /// <response code="404">Товар с указанным идентификатором не найден.</response>
     [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(
         int id, [FromBody] ProductRequestDto dto, CancellationToken ct)
     {
@@ -107,6 +114,8 @@ public class ProductsController : ControllerBase
     /// приведёт к <c>DbUpdateException</c> (FK с <c>DeleteBehavior.Restrict</c>) → 500.
     /// </remarks>
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         var deleted = await _repository.DeleteAsync(id, ct);
