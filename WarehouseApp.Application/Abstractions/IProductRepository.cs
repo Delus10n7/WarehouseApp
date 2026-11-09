@@ -19,7 +19,7 @@ public interface IProductRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор товара.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    /// <returns>Объект товара или null, если товар не найден.</returns>
+    /// <returns>Объект товара или <c>null</c>, если не найден.</returns>
     Task<Product?> GetByIdAsync(int id, CancellationToken ct = default);
 
     /// <summary>
@@ -27,13 +27,13 @@ public interface IProductRepository
     /// </summary>
     /// <param name="product">Объект товара для добавления.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    /// <returns>Созданный объект товара.</returns>
+    /// <returns>Созданный объект товара (с присвоенным Id).</returns>
     Task<Product> AddAsync(Product product, CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно обновляет данные существующего товара.
     /// </summary>
-    /// <param name="product">Объект товара с обновленными данными.</param>
+    /// <param name="product">Объект товара с обновлёнными данными.</param>
     /// <param name="ct">Токен отмены операции.</param>
     Task UpdateAsync(Product product, CancellationToken ct = default);
 
@@ -42,13 +42,13 @@ public interface IProductRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор товара.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    /// <returns>true если объект найден и удален.</returns>
+    /// <returns><c>true</c>, если запись была найдена и удалена; иначе <c>false</c>.</returns>
     Task<bool> DeleteAsync(int id, CancellationToken ct = default);
 
     /// <summary>
-    /// Асинхронно получает список всех товаров c категориями и единицами измерения.
+    /// Асинхронно получает список всех товаров с подгруженными категориями и единицами измерения.
     /// </summary>
     /// <param name="ct">Токен отмены операции.</param>
-    /// <returns>Список товаров.</returns>
+    /// <returns>Список товаров с навигационными свойствами.</returns>
     Task<IReadOnlyList<Product>> GetAllWithDetailsAsync(CancellationToken ct = default);
 }

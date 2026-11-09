@@ -5,5 +5,6 @@
 /// </summary>
 public class UnitOfMeasureCreateDto
 {
+    /// <summary>Название или сокращение единицы измерения.</summary>
     public string Name { get; set; } = string.Empty;
 }

@@ -27,13 +27,13 @@ public interface ICounterpartyRepository
     /// </summary>
     /// <param name="counterparty">Объект контрагента для добавления.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    /// <returns>Созданный объект контрагента.</returns>
+    /// <returns>Созданный объект контрагента (с присвоенным Id).</returns>
     Task<Counterparty> AddAsync(Counterparty counterparty, CancellationToken ct = default);
 
     /// <summary>
     /// Асинхронно обновляет данные существующего контрагента.
     /// </summary>
-    /// <param name="counterparty">Объект контрагента с обновленными данными.</param>
+    /// <param name="counterparty">Объект контрагента с обновлёнными данными.</param>
     /// <param name="ct">Токен отмены операции.</param>
     Task UpdateAsync(Counterparty counterparty, CancellationToken ct = default);
 
@@ -42,6 +42,6 @@ public interface ICounterpartyRepository
     /// </summary>
     /// <param name="id">Уникальный идентификатор контрагента.</param>
     /// <param name="ct">Токен отмены операции.</param>
-    /// <returns>true если нашли и удалили объект</returns>
+    /// <returns><c>true</c>, если запись была найдена и удалена; иначе <c>false</c>.</returns>
     Task<bool> DeleteAsync(int id, CancellationToken ct = default);
 }

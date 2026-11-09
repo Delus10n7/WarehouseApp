@@ -9,12 +9,11 @@ namespace WarehouseApp.Infrastructure.Repository;
 /// </summary>
 public class ProductRepository : IProductRepository
 {
+    /// <summary>Фабрика контекстов БД.</summary>
     private readonly IDbContextFactory<WarehouseDbContext> _contextFactory;
 
-    /// <summary>
-    /// Инициализирует новый экземпляр репозитория товаров.
-    /// </summary>
-    /// <param name="contextFactory">Фабрика контекстов БД (scoped через DI).</param>
+    /// <summary>Инициализирует новый экземпляр репозитория товаров.</summary>
+    /// <param name="contextFactory">Фабрика контекстов БД.</param>
     public ProductRepository(IDbContextFactory<WarehouseDbContext> contextFactory)
     {
         _contextFactory = contextFactory;
@@ -58,7 +57,6 @@ public class ProductRepository : IProductRepository
 
         context.Products.Attach(product);
         context.Entry(product).State = EntityState.Modified;
-
         context.Entry(product).Reference(p => p.Category).IsModified = false;
         context.Entry(product).Reference(p => p.UnitOfMeasure).IsModified = false;
 

@@ -5,5 +5,8 @@
 /// </summary>
 public class CategoryCreateDto
 {
+    /// <summary>
+    /// Название категории.
+    /// </summary>
     public string Name { get; set; } = string.Empty;
 }

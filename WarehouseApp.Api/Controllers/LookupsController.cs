@@ -15,12 +15,15 @@ namespace WarehouseApp.Api.Controllers;
 [Route("api/[controller]")]
 public class LookupsController : ControllerBase
 {
+    /// <summary>
+    /// Абстракция контекста БД для работы со справочниками.
+    /// </summary>
     private readonly IWarehouseDbContext _context;
 
     /// <summary>
     /// Инициализирует контроллер справочников.
     /// </summary>
-    /// <param name="context">Абстракция контекста БД (из Application).</param>
+    /// <param name="context">Абстракция контекста БД.</param>
     public LookupsController(IWarehouseDbContext context) => _context = context;
 
     /// <summary>
@@ -32,12 +35,13 @@ public class LookupsController : ControllerBase
     [HttpGet("categories")]
     public async Task<ActionResult<IEnumerable<CategoryDto>>> GetCategories(CancellationToken ct)
     {
+        // AsNoTracking — оптимизация для чтения (EF не отслеживает изменения)
         var entities = await _context.Categories.AsNoTracking().ToListAsync(ct);
         return Ok(entities.Select(e => e.ToDto()).ToList());
     }
 
     /// <summary>
-    /// Создает новую категорию.
+    /// Создаёт новую категорию.
     /// </summary>
     /// <param name="dto">Данные для создания категории.</param>
     /// <param name="ct">Токен отмены операции.</param>
@@ -52,8 +56,8 @@ public class LookupsController : ControllerBase
             return BadRequest(new { message = "Поле 'Name' обязательно." });
 
         var entity = dto.ToEntity();
-        _context.Add(entity);
-        await _context.SaveChangesAsync(ct);
+        _context.Add(entity);               // Добавляем в ChangeTracker
+        await _context.SaveChangesAsync(ct); // Сохраняем в БД
         return Ok(entity.ToDto());
     }
 
@@ -71,7 +75,7 @@ public class LookupsController : ControllerBase
     }
 
     /// <summary>
-    /// Создает новую единицу измерения.
+    /// Создаёт новую единицу измерения.
     /// </summary>
     /// <param name="dto">Данные для создания единицы измерения.</param>
     /// <param name="ct">Токен отмены операции.</param>

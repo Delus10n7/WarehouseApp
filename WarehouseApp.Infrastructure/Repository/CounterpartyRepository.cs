@@ -9,12 +9,11 @@ namespace WarehouseApp.Infrastructure.Repository;
 /// </summary>
 public class CounterpartyRepository : ICounterpartyRepository
 {
+    /// <summary>Фабрика контекстов БД (scoped через DI).</summary>
     private readonly IDbContextFactory<WarehouseDbContext> _contextFactory;
 
-    /// <summary>
-    /// Инициализирует новый экземпляр репозитория контрагентов.
-    /// </summary>
-    /// <param name="contextFactory">Фабрика контекстов БД (scoped через DI).</param>
+    /// <summary>Инициализирует новый экземпляр репозитория контрагентов.</summary>
+    /// <param name="contextFactory">Фабрика контекстов БД.</param>
     public CounterpartyRepository(IDbContextFactory<WarehouseDbContext> contextFactory)
     {
         _contextFactory = contextFactory;

@@ -13,12 +13,15 @@ namespace WarehouseApp.Api.Controllers;
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
+    /// <summary>
+    /// Репозиторий для доступа к данным товаров.
+    /// </summary>
     private readonly IProductRepository _repository;
 
     /// <summary>
-    /// Инициализирует контроллер товаров.
+    /// Инициализирует новый экземпляр контроллера товаров.
     /// </summary>
-    /// <param name="repository">Репозиторий для доступа к данным товаров (из слоя Application).</param>
+    /// <param name="repository">Репозиторий для доступа к данным товаров.</param>
     public ProductsController(IProductRepository repository) => _repository = repository;
 
     /// <summary>
@@ -31,6 +34,7 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll(CancellationToken ct)
     {
+        // Используем GetAllWithDetailsAsync, чтобы EF Core подгрузил Category и UnitOfMeasure
         var entities = await _repository.GetAllWithDetailsAsync(ct);
         return Ok(entities.Select(e => e.ToDto()).ToList());
     }
@@ -54,7 +58,7 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Создает новый товар.
+    /// Создаёт новый товар.
     /// </summary>
     /// <param name="dto">Данные для создания товара.</param>
     /// <param name="ct">Токен отмены операции.</param>
@@ -73,7 +77,7 @@ public class ProductsController : ControllerBase
         var entity = dto.ToEntity();
         await _repository.AddAsync(entity, ct);
 
-        // После создания догружаем навигации, чтобы DTO содержал CategoryName/UnitOfMeasureName.
+        // После создания догружаем навигации, чтобы DTO содержал CategoryName/UnitOfMeasureName
         var created = await _repository.GetByIdAsync(entity.Id, ct);
         return CreatedAtAction(nameof(GetById), new { id = entity.Id }, created!.ToDto());
     }
@@ -82,7 +86,7 @@ public class ProductsController : ControllerBase
     /// Обновляет данные существующего товара.
     /// </summary>
     /// <param name="id">Идентификатор товара, которого нужно обновить.</param>
-    /// <param name="dto">Обновленные данные товара.</param>
+    /// <param name="dto">Обновлённые данные товара.</param>
     /// <param name="ct">Токен отмены операции.</param>
     /// <returns>Результат выполнения операции.</returns>
     /// <response code="204">Данные успешно обновлены (нет тела ответа).</response>

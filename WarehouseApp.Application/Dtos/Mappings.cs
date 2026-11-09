@@ -14,9 +14,7 @@ public static class Mappings
 {
     // ---------- Counterparty ----------
 
-    /// <summary>
-    /// Преобразует сущность <see cref="Counterparty"/> в DTO для чтения.
-    /// </summary>
+    /// <summary>Преобразует сущность <see cref="Counterparty"/> в DTO для чтения.</summary>
     public static CounterpartyDto ToDto(this Counterparty e) => new()
     {
         Id = e.Id,
@@ -25,9 +23,7 @@ public static class Mappings
         Email = e.Email
     };
 
-    /// <summary>
-    /// Создаёт новую сущность <see cref="Counterparty"/> из DTO запроса.
-    /// </summary>
+    /// <summary>Создаёт новую сущность <see cref="Counterparty"/> из DTO запроса.</summary>
     public static Counterparty ToEntity(this CounterpartyRequestDto dto) => new()
     {
         Name = dto.Name.Trim(),
@@ -35,9 +31,7 @@ public static class Mappings
         Email = Normalize(dto.Email)
     };
 
-    /// <summary>
-    /// Применяет данные из DTO к существующей сущности (для update).
-    /// </summary>
+    /// <summary>Применяет данные из DTO к существующей сущности (для update).</summary>
     public static void ApplyTo(this CounterpartyRequestDto dto, Counterparty entity)
     {
         entity.Name = dto.Name.Trim();
@@ -63,9 +57,7 @@ public static class Mappings
 
     // ---------- Product ----------
 
-    /// <summary>
-    /// Преобразует <see cref="Product"/> в DTO.
-    /// </summary>
+    /// <summary>Преобразует <see cref="Product"/> в DTO.</summary>
     public static ProductDto ToDto(this Product e) => new()
     {
         Id = e.Id,
@@ -80,9 +72,7 @@ public static class Mappings
         SalePrice = e.SalePrice
     };
 
-    /// <summary>
-    /// Создаёт <see cref="Product"/> из DTO запроса.
-    /// </summary>
+    /// <summary>Создаёт <see cref="Product"/> из DTO запроса.</summary>
     public static Product ToEntity(this ProductRequestDto dto) => new()
     {
         Name = dto.Name.Trim(),
@@ -94,9 +84,7 @@ public static class Mappings
         SalePrice = 0m
     };
 
-    /// <summary>
-    /// Применяет данные из DTO к существующему <see cref="Product"/>.
-    /// </summary>
+    /// <summary>Применяет данные из DTO к существующему <see cref="Product"/>.</summary>
     public static void ApplyTo(this ProductRequestDto dto, Product entity)
     {
         entity.Name = dto.Name.Trim();
@@ -107,9 +95,7 @@ public static class Mappings
 
     // ---------- WareDocument ----------
 
-    /// <summary>
-    /// Преобразует <see cref="WareDocument"/> в DTO для чтения.
-    /// </summary>
+    /// <summary>Преобразует <see cref="WareDocument"/> в DTO для чтения.</summary>
     public static WareDocumentDto ToDto(this WareDocument e) => new()
     {
         Id = e.Id,
@@ -122,9 +108,7 @@ public static class Mappings
         Items = e.Items.Select(i => i.ToDto()).ToList()
     };
 
-    /// <summary>
-    /// Преобразует <see cref="WareDocumentItem"/> в DTO для чтения.
-    /// </summary>
+    /// <summary>Преобразует <see cref="WareDocumentItem"/> в DTO для чтения.</summary>
     public static WareDocumentItemDto ToDto(this WareDocumentItem e) => new()
     {
         Id = e.Id,
@@ -134,8 +118,6 @@ public static class Mappings
         Price = e.Price
     };
 
-    /// <summary>
-    /// Нормализует опциональную строку: пустая/пробельная → <c>null</c>, иначе — <c>Trim()</c>.
-    /// </summary>
+    /// <summary>Нормализует опциональную строку: пустая/пробельная → <c>null</c>, иначе — <c>Trim()</c>.</summary>
     private static string? Normalize(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
 }

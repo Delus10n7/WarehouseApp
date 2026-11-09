@@ -6,8 +6,7 @@ using WarehouseApp.Infrastructure.Repository;
 namespace WarehouseApp.Infrastructure;
 
 /// <summary>
-/// Регистрация зависимостей серверного инфраструктурного слоя:
-/// DbContext, репозитории, единица работы (<see cref="IWarehouseDbContext"/>).
+/// Регистрация зависимостей серверного инфраструктурного слоя.
 /// </summary>
 public static class DependencyInjection
 {

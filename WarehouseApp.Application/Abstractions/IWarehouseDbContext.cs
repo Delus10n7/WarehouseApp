@@ -7,50 +7,43 @@ namespace WarehouseApp.Application.Abstractions;
 /// </summary>
 public interface IWarehouseDbContext
 {
-    /// <summary>
-    /// Набор сущностей товаров.
-    /// </summary>
+    /// <summary>Набор сущностей товаров.</summary>
     IQueryable<Product> Products { get; }
 
-    /// <summary>
-    /// Набор сущностей категорий.
-    /// </summary>
+    /// <summary>Набор сущностей категорий.</summary>
     IQueryable<Category> Categories { get; }
 
-    /// <summary>
-    /// Набор сущностей единиц измерения.
-    /// </summary>
+    /// <summary>Набор сущностей единиц измерения.</summary>
     IQueryable<UnitOfMeasure> UnitsOfMeasure { get; }
 
-    /// <summary>
-    /// Набор сущностей контрагентов.
-    /// </summary>
+    /// <summary>Набор сущностей контрагентов.</summary>
     IQueryable<Counterparty> Counterparties { get; }
 
-    /// <summary>
-    /// Набор сущностей складских документов.
-    /// </summary>
+    /// <summary>Набор сущностей складских документов.</summary>
     IQueryable<WareDocument> Documents { get; }
 
-    /// <summary>
-    /// Набор сущностей позиций (строк) складских документов.
-    /// </summary>
+    /// <summary>Набор сущностей позиций (строк) складских документов.</summary>
     IQueryable<WareDocumentItem> DocumentItems { get; }
 
-
     /// <summary>
-    /// Добавляет сущность в контекст (будет сохранена при SaveChangesAsync).
+    /// Добавляет сущность в контекст (будет сохранена при <see cref="SaveChangesAsync"/>).
     /// </summary>
+    /// <typeparam name="T">Тип сущности.</typeparam>
+    /// <param name="entity">Экземпляр сущности для добавления.</param>
     void Add<T>(T entity) where T : class;
 
     /// <summary>
     /// Помечает сущность как изменённую (для UPDATE).
     /// </summary>
+    /// <typeparam name="T">Тип сущности.</typeparam>
+    /// <param name="entity">Экземпляр сущности для обновления.</param>
     void Update<T>(T entity) where T : class;
 
     /// <summary>
     /// Помечает сущность как удалённую (для DELETE).
     /// </summary>
+    /// <typeparam name="T">Тип сущности.</typeparam>
+    /// <param name="entity">Экземпляр сущности для удаления.</param>
     void Remove<T>(T entity) where T : class;
 
     /// <summary>

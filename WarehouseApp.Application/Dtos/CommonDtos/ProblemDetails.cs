@@ -2,13 +2,11 @@
 
 /// <summary>
 /// DTO ошибки в формате RFC 7807 (Problem Details for HTTP APIs).
-/// Используется и сервером (через встроенный <c>Microsoft.AspNetCore.Mvc.ProblemDetails</c>),
-/// и клиентом (для десериализации 4xx/5xx ответов).
+/// Используется клиентом для десериализации 4xx/5xx ответов.
 /// </summary>
 /// <remarks>
 /// Название класса и набор свойств должны точно совпадать со схемой
-/// <c>ProblemDetails</c> в <c>swagger.json</c>, иначе NSwag не найдёт тип
-/// и сгенерирует ошибку компиляции (CS0246).
+/// <c>ProblemDetails</c> в <c>swagger.json</c>, иначе NSwag не найдёт тип.
 /// </remarks>
 public class ProblemDetails
 {
