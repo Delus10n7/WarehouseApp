@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WarehouseApp.Application.Abstractions;
 using WarehouseApp.Application.Dtos;
 using WarehouseApp.Application.Dtos.CounterpartyDtos;
@@ -11,6 +12,7 @@ namespace WarehouseApp.Api.Controllers;
 /// </summary>
 [ApiController]                              // Включает автоматическую валидацию модели и связывание параметров
 [Route("api/[controller]")]                  // Маршрут: /api/Counterparties (имя контроллера без "Controller")
+[Authorize]
 public class CounterpartiesController : ControllerBase
 {
     /// <summary>

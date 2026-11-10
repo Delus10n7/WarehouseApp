@@ -1,6 +1,12 @@
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using NSwag;
+using NSwag.Generation.Processors;
+using NSwag.Generation.Processors.Security;
+using WarehouseApp.Api.Services;
 using WarehouseApp.Infrastructure;
-using NSwag.AspNetCore;
 
 // Создаём builder для настройки веб-приложения.
 // Через builder регистрируются сервисы (DI), конфигурация, логирование.
@@ -29,7 +35,49 @@ builder.Services.AddOpenApiDocument(config =>
     config.DocumentName = "v1";               // Имя документа (используется в URL: /swagger/v1/swagger.json)
     config.Title = "WarehouseApp API";        // Заголовок API в документации
     config.Version = "v1";                    // Версия API
+
+    config.DocumentProcessors.Add(new SecurityDefinitionAppender("Bearer",
+        new OpenApiSecurityScheme
+        {
+            Type = OpenApiSecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Введите JWT-токен (без префикса 'Bearer ')."
+        }));
+
+    // Применяем схему "Bearer" ко всем операциям по умолчанию.
+    config.OperationProcessors.Add(new OperationSecurityScopeProcessor("Bearer"));
 });
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException(
+        "Jwt:Key is not configured. Add it to appsettings.json or appsettings.Development.json.");
+}
+
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "WarehouseApp";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "WarehouseAppClient";
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,               // проверять iss
+            ValidateAudience = true,             // проверять aud
+            ValidateLifetime = true,             // проверять exp
+            ValidateIssuerSigningKey = true,     // проверять подпись
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ClockSkew = TimeSpan.Zero            // без допуска на расхождение часов
+        };
+    });
+
+// Сервис генерации токенов.
+builder.Services.AddSingleton<ITokenService, TokenService>();
 
 // Получаем строку подключения из appsettings.json.
 // Если там пусто — используется резервная строка для локальной разработки (SQLEXPRESS).
@@ -97,9 +145,7 @@ if (app.Environment.IsDevelopment())
 // CORS-middleware должен идти ДО MapControllers, иначе политика не применится.
 app.UseCors("AllowAll");
 
-// TODO: при добавлении аутентификации (JWT/куки) разместить UseAuthentication()
-// ПЕРЕД UseAuthorization() — иначе User.Identity не заполнится.
-// app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Маршрутизация запросов к контроллерам по атрибутам [Route]/[HttpGet]/[HttpPost] и т.д.

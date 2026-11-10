@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WarehouseApp.Application.Abstractions;
 using WarehouseApp.Application.Dtos;
 using WarehouseApp.Application.Dtos.ProductDtos;
@@ -11,6 +12,7 @@ namespace WarehouseApp.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ProductsController : ControllerBase
 {
     /// <summary>

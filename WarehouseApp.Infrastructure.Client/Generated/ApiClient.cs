@@ -10,6 +10,7 @@ using WarehouseApp.Application.Dtos.CounterpartyDtos;
 using WarehouseApp.Application.Dtos.ProductDtos;
 using WarehouseApp.Application.Dtos.UnitOfMeasureDtos;
 using WarehouseApp.Application.Dtos.WareDocumentDtos;
+using WarehouseApp.Infrastructure.Client.Services;
 
 #pragma warning disable 108 // Disable "CS0108 '{derivedDto}.ToJson()' hides inherited member '{dtoBase}.ToJson()'. Use the new keyword if hiding was intended."
 #pragma warning disable 114 // Disable "CS0114 '{derivedDto}.RaisePropertyChanged(String)' hides inherited member 'dtoBase.RaisePropertyChanged(String)'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword."

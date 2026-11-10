@@ -21,8 +21,10 @@
         "WarehouseApp.Application.Dtos.CounterpartyDtos",
         "WarehouseApp.Application.Dtos.ProductDtos",
         "WarehouseApp.Application.Dtos.UnitOfMeasureDtos",
-        "WarehouseApp.Application.Dtos.WareDocumentDtos"
+        "WarehouseApp.Application.Dtos.WareDocumentDtos",
+        "WarehouseApp.Infrastructure.Client.Services"
       ],
+      "excludedOperationIds": [ "Auth_GetToken" ],
       "output": "Generated/ApiClient.cs",
       "jsonLibrary": "SystemTextJson"
     }

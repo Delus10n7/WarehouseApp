@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WarehouseApp.Application.Abstractions;
 using WarehouseApp.Application.Dtos;
@@ -13,6 +14,7 @@ namespace WarehouseApp.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class LookupsController : ControllerBase
 {
     /// <summary>
