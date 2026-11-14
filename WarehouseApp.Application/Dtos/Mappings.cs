@@ -118,6 +118,54 @@ public static class Mappings
         Price = e.Price
     };
 
+    /// <summary>
+    /// Создаёт <see cref="WareDocument"/> из DTO запроса.
+    /// </summary>
+    /// <param name="dto">DTO создания документа.</param>
+    /// <returns>Новый экземпляр документа.</returns>
+    public static WareDocument ToEntity(this WareDocumentCreateDto dto) => new()
+    {
+        Number = dto.Number.Trim(),
+        Date = dto.Date,
+        Type = dto.Type,
+        CounterpartyId = dto.CounterpartyId,
+        TotalAmount = dto.Items.Sum(i => i.Quantity * i.Price),
+        Items = dto.Items.Select(i => i.ToEntity()).ToList()
+    };
+
+    /// <summary>
+    /// Создаёт <see cref="WareDocumentItem"/> из DTO запроса.
+    /// </summary>
+    /// <param name="dto">DTO создания строки документа.</param>
+    /// <returns>Новый экземпляр строки документа.</returns>
+    public static WareDocumentItem ToEntity(this WareDocumentItemCreateDto dto) => new()
+    {
+        ProductId = dto.ProductId,
+        Quantity = dto.Quantity,
+        Price = dto.Price
+    };
+
+    /// <summary>
+    /// Применяет данные из DTO к существующему <see cref="WareDocument"/>.
+    /// </summary>
+    /// <param name="dto">DTO с обновлёнными данными.</param>
+    /// <param name="entity">Существующая сущность документа.</param>
+    public static void ApplyTo(this WareDocumentCreateDto dto, WareDocument entity)
+    {
+        entity.Number = dto.Number.Trim();
+        entity.Date = dto.Date;
+        entity.Type = dto.Type;
+        entity.CounterpartyId = dto.CounterpartyId;
+        entity.TotalAmount = dto.Items.Sum(i => i.Quantity * i.Price);
+
+        // Удаляем старые строки и добавляем новые (простой способ обновления дочерней коллекции)
+        entity.Items.Clear();
+        foreach (var itemDto in dto.Items)
+        {
+            entity.Items.Add(itemDto.ToEntity());
+        }
+    }
+
     /// <summary>Нормализует опциональную строку: пустая/пробельная → <c>null</c>, иначе — <c>Trim()</c>.</summary>
     private static string? Normalize(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
 }

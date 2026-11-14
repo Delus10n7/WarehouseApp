@@ -15,6 +15,15 @@ public partial class CounterpartiesClient
     }
 }
 
+public partial class DocumentsClient
+{
+    static partial void UpdateJsonSerializerSettings(JsonSerializerOptions settings)
+    {
+        settings.PropertyNameCaseInsensitive = true;
+        settings.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    }
+}
+
 public partial class LookupsClient
 {
     static partial void UpdateJsonSerializerSettings(JsonSerializerOptions settings)

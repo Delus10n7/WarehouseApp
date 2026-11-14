@@ -3,6 +3,7 @@ using CommunityToolkit.Maui.Services;
 using Microsoft.Extensions.Logging;
 using WarehouseApp.Infrastructure.Client;
 using WarehouseApp.Maui.ViewModels.Counterparties;
+using WarehouseApp.Maui.ViewModels.Documents;
 using WarehouseApp.Maui.ViewModels.Products;
 
 namespace WarehouseApp.Maui;
@@ -61,10 +62,12 @@ public static class MauiProgram
         // ViewModel'и страниц — Transient (новый экземпляр на каждый переход).
         builder.Services.AddTransient<CounterpartiesViewModel>();
         builder.Services.AddTransient<ProductsViewModel>();
+        builder.Services.AddTransient<DocumentsViewModel>();
 
         // Страницы, которым нужны зависимости через конструктор.
         builder.Services.AddTransient<WarehouseApp.Maui.Views.Counterparties.CounterpartiesPage>();
         builder.Services.AddTransient<WarehouseApp.Maui.Views.Products.ProductsPage>();
+        builder.Services.AddTransient<WarehouseApp.Maui.Views.Documents.DocumentsPage>();
 
         return builder.Build();
     }

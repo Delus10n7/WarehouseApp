@@ -122,7 +122,7 @@
                   <!-- Левая колонка -->
                   <VerticalStackLayout Spacing="2" VerticalOptions="Center">
                     <Label Text="{Binding Article}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
-                    <Label Text="{Binding Quantity, StringFormat='{0} шт.'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="{Binding QuantityDisplay}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                   </VerticalStackLayout>
 
                   <!-- Центр -->

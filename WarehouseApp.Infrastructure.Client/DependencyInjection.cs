@@ -55,6 +55,12 @@ public static class DependencyInjection
             client.DefaultRequestHeaders.Add("Accept", "application/json");
         }).AddHttpMessageHandler<JwtAuthorizationHandler>();
 
+        services.AddHttpClient<IDocumentsClient, DocumentsClient>(client =>
+        {
+            client.BaseAddress = new Uri(apiBaseUrl);
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+        }).AddHttpMessageHandler<JwtAuthorizationHandler>();
+
         return services;
     }
 }

@@ -34,4 +34,12 @@ public class ProductDto
 
     /// <summary>Цена продажи товара.</summary>
     public decimal SalePrice { get; set; }
+
+    /// <summary>
+    /// Отформатированное количество с единицей измерения (например, "5.5 мл").
+    /// Если единица измерения не задана, выводится только число.
+    /// </summary>
+    public string QuantityDisplay => UnitOfMeasureName != null
+        ? $"{Quantity.ToString("0.###")} {UnitOfMeasureName}"
+        : $"{Quantity.ToString("0.###")}";
 }

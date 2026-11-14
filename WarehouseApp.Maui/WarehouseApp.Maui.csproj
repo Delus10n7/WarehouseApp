@@ -81,7 +81,6 @@
 
 	<ItemGroup>
 	  <Folder Include="ViewModels\Reports\" />
-	  <Folder Include="ViewModels\Documents\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -92,6 +91,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Counterparties\CounterpartyPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Documents\DocumentPopup.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Documents\DocumentsPage.xaml">
